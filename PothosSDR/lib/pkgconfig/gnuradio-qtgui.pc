@@ -1,0 +1,11 @@
+prefix=C:/PothosSDR
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: gnuradio-qtgui
+Description: GNU Radio blocks for QT GUI
+Requires: gnuradio-runtime
+Version: 3.9.2git
+Libs: -L${libdir} -lgnuradio-qtgui C:/build/PothosSDR_vc16/Build/qwt/lib/qwt.lib 
+Cflags: -I${includedir} -IC:/build/PothosSDR_vc16/Source/qwt/src -I

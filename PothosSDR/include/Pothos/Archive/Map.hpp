@@ -1,0 +1,52 @@
+///
+/// \file Archive/Map.hpp
+///
+/// Map support for serialization.
+///
+/// \copyright
+/// Copyright (c) 2016-2019 Josh Blum
+/// SPDX-License-Identifier: BSL-1.0
+///
+
+#pragma once
+#include <Pothos/Config.hpp>
+#include <Pothos/Archive/Invoke.hpp>
+#include <Pothos/Archive/Numbers.hpp>
+#include <Pothos/Archive/Pair.hpp>
+#include <utility> //move
+#include <map>
+
+namespace Pothos {
+namespace serialization {
+
+template<typename Archive, typename K, typename T, typename Compare, typename Allocator>
+void save(Archive &ar, const std::map<K, T, Compare, Allocator> &t, const unsigned int)
+{
+    ar << unsigned(t.size());
+    for (const auto &pair : t)
+    {
+        ar << pair;
+    }
+}
+
+template<typename Archive, typename K, typename T, typename Compare, typename Allocator>
+void load(Archive &ar, std::map<K, T, Compare, Allocator> &t, const unsigned int)
+{
+    t.clear();
+    unsigned size(0);
+    ar >> size;
+    for (size_t i = 0; i < size_t(size); i++)
+    {
+        std::pair<K, T> pair;
+        ar >> pair;
+        t.emplace_hint(t.end(), std::move(pair));
+    }
+}
+
+template <typename Archive, typename K, typename T, typename Compare, typename Allocator>
+void serialize(Archive &ar, std::map<K, T, Compare, Allocator> &t, const unsigned int ver)
+{
+    Pothos::serialization::invokeSplit(ar, t, ver);
+}
+
+}}

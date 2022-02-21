@@ -1,0 +1,11 @@
+prefix=C:/PothosSDR
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: gnuradio-runtime
+Description: GNU Radio core runtime infrastructure
+Requires:
+Version: 3.9.2git
+Libs: -L${libdir} -lgnuradio-runtime -lgnuradio-pmt -lmpirxx -lmpir 
+Cflags: -I${includedir} -IC:/build/PothosSDR_vc16/Source/MPIR/msvc/vs19/dll_mpir_gc/x64/Release

@@ -1,0 +1,10 @@
+prefix=C:/PothosSDR/zmq
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libzmq
+Description: 0MQ c++ library
+Version: 4.1.8
+Libs: -L${libdir} -lzmq
+Cflags: -I${includedir}

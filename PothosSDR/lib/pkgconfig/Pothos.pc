@@ -1,0 +1,15 @@
+prefix=C:/PothosSDR
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Pothos
+Description: The Pothos data-flow framework
+URL: http://pothosware.com/
+Version: 0.8.0
+Requires:
+Requires.private:
+Conflicts:
+Cflags: -I${includedir}
+Libs: -L${libdir} -lPothos
+Libs.private: -lmuparserx

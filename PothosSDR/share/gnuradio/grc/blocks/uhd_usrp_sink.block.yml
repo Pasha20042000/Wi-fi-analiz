@@ -1,0 +1,4198 @@
+id: uhd_usrp_sink
+label: 'UHD: USRP Sink'
+flags: [python, cpp, throttle]
+
+parameters:
+-   id: type
+    label: Input Type
+    dtype: enum
+    options: [fc32, sc16, item32]
+    option_labels: [Complex float32, Complex int16, VITA word32]
+    option_attributes:
+        type: [fc32, sc16, s32]
+    hide: part
+-   id: otw
+    label: Wire Format
+    dtype: enum
+    options: ['', sc16, sc12, sc8]
+    option_labels: [Automatic, Complex int16, Complex int12, Complex int8]
+    hide: ${ 'none' if otw else 'part'}
+-   id: stream_args
+    label: Stream args
+    dtype: string
+    options: ['', peak=0.003906]
+    option_labels: ['', peak=0.003906]
+    hide: ${ 'none' if stream_args else 'part'}
+-   id: stream_chans
+    label: Stream channels
+    dtype: int_vector
+    default: '[]'
+    hide: ${ 'none' if stream_chans else 'part'}
+-   id: dev_addr
+    label: Device Address
+    dtype: string
+    default: '""'
+    hide: ${ 'none' if dev_addr else 'part'}
+-   id: dev_args
+    label: Device Arguments
+    dtype: string
+    hide: ${ 'none' if dev_args else 'part'}
+-   id: sync
+    label: Sync
+    dtype: enum
+    options: [sync, pc_clock, pc_clock_next_pps, gps_time, none]
+    option_labels: [Unknown PPS, PC Clock, PC Clock on Next PPS, GPS Time on Next PPS, No Sync]
+    hide: ${ 'none' if sync else 'part'}
+-   id: start_time
+    label: Start Time (seconds)
+    dtype: real
+    default: -1.0
+    options: [-1.0]
+    option_labels: [Default]
+    hide: ${ 'none' if start_time >= 0.0 else 'part' }
+-   id: clock_rate
+    label: Clock Rate (Hz)
+    dtype: real
+    default: 0e0
+    options: [0e0, 200e6, 184.32e6, 153.6e6, 125.0e6, 122.88e6, 120e6, 30.72e6]
+    option_labels: [Default, 200 MHz, 184.32 MHz, 153.6 MHz, 125 MHz, 122.88 MHz, 120 MHz, 30.72 MHz]
+    hide: ${ 'none' if clock_rate else 'part' }
+-   id: num_mboards
+    label: Num Mboards
+    dtype: int
+    default: 1
+    options: [1, 2, 3, 4, 5, 6, 7, 8]
+    hide: part
+-   id: clock_source0
+    label: 'Mb0: Clock Source'
+    dtype: string
+    options: ['', internal, external, mimo, gpsdo]
+    option_labels: [Default, Internal, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 0) else ( 'none' if clock_source0 else 'part')}
+-   id: time_source0
+    label: 'Mb0: Time Source'
+    dtype: string
+    options: ['', external, mimo, gpsdo]
+    option_labels: [Default, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 0) else ('none' if time_source0 else 'part')}
+-   id: sd_spec0
+    label: 'Mb0: Subdev Spec'
+    dtype: string
+    hide: ${ 'all' if not (num_mboards > 0) else ('none' if sd_spec0 else 'part')}
+-   id: clock_source1
+    label: 'Mb1: Clock Source'
+    dtype: string
+    options: ['', internal, external, mimo, gpsdo]
+    option_labels: [Default, Internal, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 1) else ( 'none' if clock_source1 else 'part')}
+-   id: time_source1
+    label: 'Mb1: Time Source'
+    dtype: string
+    options: ['', external, mimo, gpsdo]
+    option_labels: [Default, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 1) else ('none' if time_source1 else 'part')}
+-   id: sd_spec1
+    label: 'Mb1: Subdev Spec'
+    dtype: string
+    hide: ${ 'all' if not (num_mboards > 1) else ('none' if sd_spec1 else 'part')}
+-   id: clock_source2
+    label: 'Mb2: Clock Source'
+    dtype: string
+    options: ['', internal, external, mimo, gpsdo]
+    option_labels: [Default, Internal, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 2) else ( 'none' if clock_source2 else 'part')}
+-   id: time_source2
+    label: 'Mb2: Time Source'
+    dtype: string
+    options: ['', external, mimo, gpsdo]
+    option_labels: [Default, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 2) else ('none' if time_source2 else 'part')}
+-   id: sd_spec2
+    label: 'Mb2: Subdev Spec'
+    dtype: string
+    hide: ${ 'all' if not (num_mboards > 2) else ('none' if sd_spec2 else 'part')}
+-   id: clock_source3
+    label: 'Mb3: Clock Source'
+    dtype: string
+    options: ['', internal, external, mimo, gpsdo]
+    option_labels: [Default, Internal, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 3) else ( 'none' if clock_source3 else 'part')}
+-   id: time_source3
+    label: 'Mb3: Time Source'
+    dtype: string
+    options: ['', external, mimo, gpsdo]
+    option_labels: [Default, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 3) else ('none' if time_source3 else 'part')}
+-   id: sd_spec3
+    label: 'Mb3: Subdev Spec'
+    dtype: string
+    hide: ${ 'all' if not (num_mboards > 3) else ('none' if sd_spec3 else 'part')}
+-   id: clock_source4
+    label: 'Mb4: Clock Source'
+    dtype: string
+    options: ['', internal, external, mimo, gpsdo]
+    option_labels: [Default, Internal, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 4) else ( 'none' if clock_source4 else 'part')}
+-   id: time_source4
+    label: 'Mb4: Time Source'
+    dtype: string
+    options: ['', external, mimo, gpsdo]
+    option_labels: [Default, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 4) else ('none' if time_source4 else 'part')}
+-   id: sd_spec4
+    label: 'Mb4: Subdev Spec'
+    dtype: string
+    hide: ${ 'all' if not (num_mboards > 4) else ('none' if sd_spec4 else 'part')}
+-   id: clock_source5
+    label: 'Mb5: Clock Source'
+    dtype: string
+    options: ['', internal, external, mimo, gpsdo]
+    option_labels: [Default, Internal, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 5) else ( 'none' if clock_source5 else 'part')}
+-   id: time_source5
+    label: 'Mb5: Time Source'
+    dtype: string
+    options: ['', external, mimo, gpsdo]
+    option_labels: [Default, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 5) else ('none' if time_source5 else 'part')}
+-   id: sd_spec5
+    label: 'Mb5: Subdev Spec'
+    dtype: string
+    hide: ${ 'all' if not (num_mboards > 5) else ('none' if sd_spec5 else 'part')}
+-   id: clock_source6
+    label: 'Mb6: Clock Source'
+    dtype: string
+    options: ['', internal, external, mimo, gpsdo]
+    option_labels: [Default, Internal, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 6) else ( 'none' if clock_source6 else 'part')}
+-   id: time_source6
+    label: 'Mb6: Time Source'
+    dtype: string
+    options: ['', external, mimo, gpsdo]
+    option_labels: [Default, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 6) else ('none' if time_source6 else 'part')}
+-   id: sd_spec6
+    label: 'Mb6: Subdev Spec'
+    dtype: string
+    hide: ${ 'all' if not (num_mboards > 6) else ('none' if sd_spec6 else 'part')}
+-   id: clock_source7
+    label: 'Mb7: Clock Source'
+    dtype: string
+    options: ['', internal, external, mimo, gpsdo]
+    option_labels: [Default, Internal, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 7) else ( 'none' if clock_source7 else 'part')}
+-   id: time_source7
+    label: 'Mb7: Time Source'
+    dtype: string
+    options: ['', external, mimo, gpsdo]
+    option_labels: [Default, External, MIMO Cable, O/B GPSDO]
+    hide: ${ 'all' if not (num_mboards > 7) else ('none' if time_source7 else 'part')}
+-   id: sd_spec7
+    label: 'Mb7: Subdev Spec'
+    dtype: string
+    hide: ${ 'all' if not (num_mboards > 7) else ('none' if sd_spec7 else 'part')}
+-   id: nchan
+    label: Num Channels
+    dtype: int
+    default: 1
+    options: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 ]
+    hide: part
+-   id: samp_rate
+    label: Samp rate (Sps)
+    dtype: real
+    default: samp_rate
+
+-   id: center_freq0
+    label: 'Ch0: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 0) else 'all' }
+-   id: gain0
+    label: 'Ch0: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 0 else 'all' }
+-   id: gain_type0
+    label: 'Ch0: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 0 else ('part' if (eval('gain_type' + str(0)) == 'default') else 'none')}
+-   id: ant0
+    label: 'Ch0: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 0 else ('none' if eval('ant' + str(0)) else 'part')}
+-   id: bw0
+    label: 'Ch0: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 0 else ('none' if eval('bw' + str(0)) else 'part')}
+-   id: lo_source0
+    label: 'Ch0: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 0 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export0
+    label: 'Ch0: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 0 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq1
+    label: 'Ch1: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 1) else 'all' }
+-   id: gain1
+    label: 'Ch1: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 1 else 'all' }
+-   id: gain_type1
+    label: 'Ch1: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 1 else ('part' if (eval('gain_type' + str(1)) == 'default') else 'none')}
+-   id: ant1
+    label: 'Ch1: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 1 else ('none' if eval('ant' + str(1)) else 'part')}
+-   id: bw1
+    label: 'Ch1: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 1 else ('none' if eval('bw' + str(1)) else 'part')}
+-   id: lo_source1
+    label: 'Ch1: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 1 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export1
+    label: 'Ch1: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 1 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq2
+    label: 'Ch2: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 2) else 'all' }
+-   id: gain2
+    label: 'Ch2: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 2 else 'all' }
+-   id: gain_type2
+    label: 'Ch2: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 2 else ('part' if (eval('gain_type' + str(2)) == 'default') else 'none')}
+-   id: ant2
+    label: 'Ch2: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 2 else ('none' if eval('ant' + str(2)) else 'part')}
+-   id: bw2
+    label: 'Ch2: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 2 else ('none' if eval('bw' + str(2)) else 'part')}
+-   id: lo_source2
+    label: 'Ch2: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 2 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export2
+    label: 'Ch2: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 2 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq3
+    label: 'Ch3: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 3) else 'all' }
+-   id: gain3
+    label: 'Ch3: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 3 else 'all' }
+-   id: gain_type3
+    label: 'Ch3: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 3 else ('part' if (eval('gain_type' + str(3)) == 'default') else 'none')}
+-   id: ant3
+    label: 'Ch3: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 3 else ('none' if eval('ant' + str(3)) else 'part')}
+-   id: bw3
+    label: 'Ch3: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 3 else ('none' if eval('bw' + str(3)) else 'part')}
+-   id: lo_source3
+    label: 'Ch3: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 3 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export3
+    label: 'Ch3: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 3 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq4
+    label: 'Ch4: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 4) else 'all' }
+-   id: gain4
+    label: 'Ch4: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 4 else 'all' }
+-   id: gain_type4
+    label: 'Ch4: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 4 else ('part' if (eval('gain_type' + str(4)) == 'default') else 'none')}
+-   id: ant4
+    label: 'Ch4: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 4 else ('none' if eval('ant' + str(4)) else 'part')}
+-   id: bw4
+    label: 'Ch4: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 4 else ('none' if eval('bw' + str(4)) else 'part')}
+-   id: lo_source4
+    label: 'Ch4: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 4 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export4
+    label: 'Ch4: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 4 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq5
+    label: 'Ch5: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 5) else 'all' }
+-   id: gain5
+    label: 'Ch5: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 5 else 'all' }
+-   id: gain_type5
+    label: 'Ch5: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 5 else ('part' if (eval('gain_type' + str(5)) == 'default') else 'none')}
+-   id: ant5
+    label: 'Ch5: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 5 else ('none' if eval('ant' + str(5)) else 'part')}
+-   id: bw5
+    label: 'Ch5: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 5 else ('none' if eval('bw' + str(5)) else 'part')}
+-   id: lo_source5
+    label: 'Ch5: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 5 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export5
+    label: 'Ch5: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 5 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq6
+    label: 'Ch6: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 6) else 'all' }
+-   id: gain6
+    label: 'Ch6: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 6 else 'all' }
+-   id: gain_type6
+    label: 'Ch6: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 6 else ('part' if (eval('gain_type' + str(6)) == 'default') else 'none')}
+-   id: ant6
+    label: 'Ch6: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 6 else ('none' if eval('ant' + str(6)) else 'part')}
+-   id: bw6
+    label: 'Ch6: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 6 else ('none' if eval('bw' + str(6)) else 'part')}
+-   id: lo_source6
+    label: 'Ch6: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 6 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export6
+    label: 'Ch6: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 6 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq7
+    label: 'Ch7: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 7) else 'all' }
+-   id: gain7
+    label: 'Ch7: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 7 else 'all' }
+-   id: gain_type7
+    label: 'Ch7: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 7 else ('part' if (eval('gain_type' + str(7)) == 'default') else 'none')}
+-   id: ant7
+    label: 'Ch7: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 7 else ('none' if eval('ant' + str(7)) else 'part')}
+-   id: bw7
+    label: 'Ch7: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 7 else ('none' if eval('bw' + str(7)) else 'part')}
+-   id: lo_source7
+    label: 'Ch7: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 7 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export7
+    label: 'Ch7: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 7 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq8
+    label: 'Ch8: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 8) else 'all' }
+-   id: gain8
+    label: 'Ch8: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 8 else 'all' }
+-   id: gain_type8
+    label: 'Ch8: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 8 else ('part' if (eval('gain_type' + str(8)) == 'default') else 'none')}
+-   id: ant8
+    label: 'Ch8: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 8 else ('none' if eval('ant' + str(8)) else 'part')}
+-   id: bw8
+    label: 'Ch8: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 8 else ('none' if eval('bw' + str(8)) else 'part')}
+-   id: lo_source8
+    label: 'Ch8: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 8 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export8
+    label: 'Ch8: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 8 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq9
+    label: 'Ch9: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 9) else 'all' }
+-   id: gain9
+    label: 'Ch9: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 9 else 'all' }
+-   id: gain_type9
+    label: 'Ch9: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 9 else ('part' if (eval('gain_type' + str(9)) == 'default') else 'none')}
+-   id: ant9
+    label: 'Ch9: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 9 else ('none' if eval('ant' + str(9)) else 'part')}
+-   id: bw9
+    label: 'Ch9: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 9 else ('none' if eval('bw' + str(9)) else 'part')}
+-   id: lo_source9
+    label: 'Ch9: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 9 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export9
+    label: 'Ch9: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 9 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq10
+    label: 'Ch10: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 10) else 'all' }
+-   id: gain10
+    label: 'Ch10: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 10 else 'all' }
+-   id: gain_type10
+    label: 'Ch10: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 10 else ('part' if (eval('gain_type' + str(10)) == 'default') else 'none')}
+-   id: ant10
+    label: 'Ch10: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 10 else ('none' if eval('ant' + str(10)) else 'part')}
+-   id: bw10
+    label: 'Ch10: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 10 else ('none' if eval('bw' + str(10)) else 'part')}
+-   id: lo_source10
+    label: 'Ch10: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 10 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export10
+    label: 'Ch10: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 10 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq11
+    label: 'Ch11: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 11) else 'all' }
+-   id: gain11
+    label: 'Ch11: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 11 else 'all' }
+-   id: gain_type11
+    label: 'Ch11: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 11 else ('part' if (eval('gain_type' + str(11)) == 'default') else 'none')}
+-   id: ant11
+    label: 'Ch11: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 11 else ('none' if eval('ant' + str(11)) else 'part')}
+-   id: bw11
+    label: 'Ch11: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 11 else ('none' if eval('bw' + str(11)) else 'part')}
+-   id: lo_source11
+    label: 'Ch11: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 11 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export11
+    label: 'Ch11: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 11 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq12
+    label: 'Ch12: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 12) else 'all' }
+-   id: gain12
+    label: 'Ch12: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 12 else 'all' }
+-   id: gain_type12
+    label: 'Ch12: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 12 else ('part' if (eval('gain_type' + str(12)) == 'default') else 'none')}
+-   id: ant12
+    label: 'Ch12: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 12 else ('none' if eval('ant' + str(12)) else 'part')}
+-   id: bw12
+    label: 'Ch12: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 12 else ('none' if eval('bw' + str(12)) else 'part')}
+-   id: lo_source12
+    label: 'Ch12: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 12 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export12
+    label: 'Ch12: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 12 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq13
+    label: 'Ch13: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 13) else 'all' }
+-   id: gain13
+    label: 'Ch13: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 13 else 'all' }
+-   id: gain_type13
+    label: 'Ch13: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 13 else ('part' if (eval('gain_type' + str(13)) == 'default') else 'none')}
+-   id: ant13
+    label: 'Ch13: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 13 else ('none' if eval('ant' + str(13)) else 'part')}
+-   id: bw13
+    label: 'Ch13: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 13 else ('none' if eval('bw' + str(13)) else 'part')}
+-   id: lo_source13
+    label: 'Ch13: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 13 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export13
+    label: 'Ch13: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 13 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq14
+    label: 'Ch14: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 14) else 'all' }
+-   id: gain14
+    label: 'Ch14: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 14 else 'all' }
+-   id: gain_type14
+    label: 'Ch14: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 14 else ('part' if (eval('gain_type' + str(14)) == 'default') else 'none')}
+-   id: ant14
+    label: 'Ch14: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 14 else ('none' if eval('ant' + str(14)) else 'part')}
+-   id: bw14
+    label: 'Ch14: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 14 else ('none' if eval('bw' + str(14)) else 'part')}
+-   id: lo_source14
+    label: 'Ch14: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 14 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export14
+    label: 'Ch14: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 14 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq15
+    label: 'Ch15: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 15) else 'all' }
+-   id: gain15
+    label: 'Ch15: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 15 else 'all' }
+-   id: gain_type15
+    label: 'Ch15: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 15 else ('part' if (eval('gain_type' + str(15)) == 'default') else 'none')}
+-   id: ant15
+    label: 'Ch15: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 15 else ('none' if eval('ant' + str(15)) else 'part')}
+-   id: bw15
+    label: 'Ch15: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 15 else ('none' if eval('bw' + str(15)) else 'part')}
+-   id: lo_source15
+    label: 'Ch15: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 15 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export15
+    label: 'Ch15: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 15 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq16
+    label: 'Ch16: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 16) else 'all' }
+-   id: gain16
+    label: 'Ch16: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 16 else 'all' }
+-   id: gain_type16
+    label: 'Ch16: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 16 else ('part' if (eval('gain_type' + str(16)) == 'default') else 'none')}
+-   id: ant16
+    label: 'Ch16: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 16 else ('none' if eval('ant' + str(16)) else 'part')}
+-   id: bw16
+    label: 'Ch16: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 16 else ('none' if eval('bw' + str(16)) else 'part')}
+-   id: lo_source16
+    label: 'Ch16: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 16 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export16
+    label: 'Ch16: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 16 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq17
+    label: 'Ch17: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 17) else 'all' }
+-   id: gain17
+    label: 'Ch17: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 17 else 'all' }
+-   id: gain_type17
+    label: 'Ch17: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 17 else ('part' if (eval('gain_type' + str(17)) == 'default') else 'none')}
+-   id: ant17
+    label: 'Ch17: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 17 else ('none' if eval('ant' + str(17)) else 'part')}
+-   id: bw17
+    label: 'Ch17: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 17 else ('none' if eval('bw' + str(17)) else 'part')}
+-   id: lo_source17
+    label: 'Ch17: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 17 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export17
+    label: 'Ch17: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 17 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq18
+    label: 'Ch18: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 18) else 'all' }
+-   id: gain18
+    label: 'Ch18: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 18 else 'all' }
+-   id: gain_type18
+    label: 'Ch18: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 18 else ('part' if (eval('gain_type' + str(18)) == 'default') else 'none')}
+-   id: ant18
+    label: 'Ch18: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 18 else ('none' if eval('ant' + str(18)) else 'part')}
+-   id: bw18
+    label: 'Ch18: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 18 else ('none' if eval('bw' + str(18)) else 'part')}
+-   id: lo_source18
+    label: 'Ch18: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 18 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export18
+    label: 'Ch18: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 18 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq19
+    label: 'Ch19: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 19) else 'all' }
+-   id: gain19
+    label: 'Ch19: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 19 else 'all' }
+-   id: gain_type19
+    label: 'Ch19: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 19 else ('part' if (eval('gain_type' + str(19)) == 'default') else 'none')}
+-   id: ant19
+    label: 'Ch19: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 19 else ('none' if eval('ant' + str(19)) else 'part')}
+-   id: bw19
+    label: 'Ch19: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 19 else ('none' if eval('bw' + str(19)) else 'part')}
+-   id: lo_source19
+    label: 'Ch19: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 19 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export19
+    label: 'Ch19: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 19 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq20
+    label: 'Ch20: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 20) else 'all' }
+-   id: gain20
+    label: 'Ch20: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 20 else 'all' }
+-   id: gain_type20
+    label: 'Ch20: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 20 else ('part' if (eval('gain_type' + str(20)) == 'default') else 'none')}
+-   id: ant20
+    label: 'Ch20: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 20 else ('none' if eval('ant' + str(20)) else 'part')}
+-   id: bw20
+    label: 'Ch20: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 20 else ('none' if eval('bw' + str(20)) else 'part')}
+-   id: lo_source20
+    label: 'Ch20: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 20 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export20
+    label: 'Ch20: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 20 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq21
+    label: 'Ch21: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 21) else 'all' }
+-   id: gain21
+    label: 'Ch21: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 21 else 'all' }
+-   id: gain_type21
+    label: 'Ch21: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 21 else ('part' if (eval('gain_type' + str(21)) == 'default') else 'none')}
+-   id: ant21
+    label: 'Ch21: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 21 else ('none' if eval('ant' + str(21)) else 'part')}
+-   id: bw21
+    label: 'Ch21: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 21 else ('none' if eval('bw' + str(21)) else 'part')}
+-   id: lo_source21
+    label: 'Ch21: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 21 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export21
+    label: 'Ch21: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 21 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq22
+    label: 'Ch22: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 22) else 'all' }
+-   id: gain22
+    label: 'Ch22: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 22 else 'all' }
+-   id: gain_type22
+    label: 'Ch22: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 22 else ('part' if (eval('gain_type' + str(22)) == 'default') else 'none')}
+-   id: ant22
+    label: 'Ch22: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 22 else ('none' if eval('ant' + str(22)) else 'part')}
+-   id: bw22
+    label: 'Ch22: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 22 else ('none' if eval('bw' + str(22)) else 'part')}
+-   id: lo_source22
+    label: 'Ch22: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 22 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export22
+    label: 'Ch22: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 22 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq23
+    label: 'Ch23: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 23) else 'all' }
+-   id: gain23
+    label: 'Ch23: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 23 else 'all' }
+-   id: gain_type23
+    label: 'Ch23: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 23 else ('part' if (eval('gain_type' + str(23)) == 'default') else 'none')}
+-   id: ant23
+    label: 'Ch23: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 23 else ('none' if eval('ant' + str(23)) else 'part')}
+-   id: bw23
+    label: 'Ch23: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 23 else ('none' if eval('bw' + str(23)) else 'part')}
+-   id: lo_source23
+    label: 'Ch23: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 23 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export23
+    label: 'Ch23: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 23 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq24
+    label: 'Ch24: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 24) else 'all' }
+-   id: gain24
+    label: 'Ch24: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 24 else 'all' }
+-   id: gain_type24
+    label: 'Ch24: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 24 else ('part' if (eval('gain_type' + str(24)) == 'default') else 'none')}
+-   id: ant24
+    label: 'Ch24: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 24 else ('none' if eval('ant' + str(24)) else 'part')}
+-   id: bw24
+    label: 'Ch24: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 24 else ('none' if eval('bw' + str(24)) else 'part')}
+-   id: lo_source24
+    label: 'Ch24: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 24 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export24
+    label: 'Ch24: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 24 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq25
+    label: 'Ch25: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 25) else 'all' }
+-   id: gain25
+    label: 'Ch25: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 25 else 'all' }
+-   id: gain_type25
+    label: 'Ch25: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 25 else ('part' if (eval('gain_type' + str(25)) == 'default') else 'none')}
+-   id: ant25
+    label: 'Ch25: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 25 else ('none' if eval('ant' + str(25)) else 'part')}
+-   id: bw25
+    label: 'Ch25: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 25 else ('none' if eval('bw' + str(25)) else 'part')}
+-   id: lo_source25
+    label: 'Ch25: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 25 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export25
+    label: 'Ch25: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 25 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq26
+    label: 'Ch26: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 26) else 'all' }
+-   id: gain26
+    label: 'Ch26: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 26 else 'all' }
+-   id: gain_type26
+    label: 'Ch26: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 26 else ('part' if (eval('gain_type' + str(26)) == 'default') else 'none')}
+-   id: ant26
+    label: 'Ch26: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 26 else ('none' if eval('ant' + str(26)) else 'part')}
+-   id: bw26
+    label: 'Ch26: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 26 else ('none' if eval('bw' + str(26)) else 'part')}
+-   id: lo_source26
+    label: 'Ch26: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 26 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export26
+    label: 'Ch26: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 26 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq27
+    label: 'Ch27: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 27) else 'all' }
+-   id: gain27
+    label: 'Ch27: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 27 else 'all' }
+-   id: gain_type27
+    label: 'Ch27: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 27 else ('part' if (eval('gain_type' + str(27)) == 'default') else 'none')}
+-   id: ant27
+    label: 'Ch27: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 27 else ('none' if eval('ant' + str(27)) else 'part')}
+-   id: bw27
+    label: 'Ch27: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 27 else ('none' if eval('bw' + str(27)) else 'part')}
+-   id: lo_source27
+    label: 'Ch27: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 27 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export27
+    label: 'Ch27: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 27 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq28
+    label: 'Ch28: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 28) else 'all' }
+-   id: gain28
+    label: 'Ch28: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 28 else 'all' }
+-   id: gain_type28
+    label: 'Ch28: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 28 else ('part' if (eval('gain_type' + str(28)) == 'default') else 'none')}
+-   id: ant28
+    label: 'Ch28: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 28 else ('none' if eval('ant' + str(28)) else 'part')}
+-   id: bw28
+    label: 'Ch28: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 28 else ('none' if eval('bw' + str(28)) else 'part')}
+-   id: lo_source28
+    label: 'Ch28: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 28 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export28
+    label: 'Ch28: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 28 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq29
+    label: 'Ch29: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 29) else 'all' }
+-   id: gain29
+    label: 'Ch29: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 29 else 'all' }
+-   id: gain_type29
+    label: 'Ch29: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 29 else ('part' if (eval('gain_type' + str(29)) == 'default') else 'none')}
+-   id: ant29
+    label: 'Ch29: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 29 else ('none' if eval('ant' + str(29)) else 'part')}
+-   id: bw29
+    label: 'Ch29: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 29 else ('none' if eval('bw' + str(29)) else 'part')}
+-   id: lo_source29
+    label: 'Ch29: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 29 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export29
+    label: 'Ch29: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 29 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq30
+    label: 'Ch30: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 30) else 'all' }
+-   id: gain30
+    label: 'Ch30: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 30 else 'all' }
+-   id: gain_type30
+    label: 'Ch30: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 30 else ('part' if (eval('gain_type' + str(30)) == 'default') else 'none')}
+-   id: ant30
+    label: 'Ch30: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 30 else ('none' if eval('ant' + str(30)) else 'part')}
+-   id: bw30
+    label: 'Ch30: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 30 else ('none' if eval('bw' + str(30)) else 'part')}
+-   id: lo_source30
+    label: 'Ch30: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 30 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export30
+    label: 'Ch30: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 30 else ('none' if show_lo_controls else 'all')}
+
+-   id: center_freq31
+    label: 'Ch31: Center Freq (Hz)'
+    category: RF Options
+    dtype: raw
+    default: '0'
+    hide: ${ 'none' if (nchan > 31) else 'all' }
+-   id: gain31
+    label: 'Ch31: Gain Value'
+    category: RF Options
+    dtype: float
+    default: '0'
+    hide: ${ 'none' if nchan > 31 else 'all' }
+-   id: gain_type31
+    label: 'Ch31: Gain Type'
+    category: RF Options
+    dtype: enum
+    options: [default, normalized, power]
+    option_labels: [Absolute (dB), Normalized, Absolute Power (dBm)]
+    hide: ${ 'all' if nchan <= 31 else ('part' if (eval('gain_type' + str(31)) == 'default') else 'none')}
+-   id: ant31
+    label: 'Ch31: Antenna'
+    category: RF Options
+    dtype: string
+    options: ['"TX/RX"']
+    option_labels: [TX/RX]
+    hide: ${ 'all' if not nchan > 31 else ('none' if eval('ant' + str(31)) else 'part')}
+-   id: bw31
+    label: 'Ch31: Bandwidth (Hz)'
+    category: RF Options
+    dtype: real
+    default: '0'
+    hide: ${ 'all' if not nchan > 31 else ('none' if eval('bw' + str(31)) else 'part')}
+-   id: lo_source31
+    label: 'Ch31: LO Source'
+    category: RF Options
+    dtype: string
+    default: internal
+    options: [internal, external, companion]
+    hide: ${ 'all' if not nchan > 31 else ('none' if show_lo_controls else 'all')}
+-   id: lo_export31
+    label: 'Ch31: LO Export'
+    category: RF Options
+    dtype: bool
+    default: 'False'
+    options: ['True', 'False']
+    hide: ${ 'all' if not nchan > 31 else ('none' if show_lo_controls else 'all')}
+
+-   id: show_lo_controls
+    label: Show LO Controls
+    category: Advanced
+    dtype: bool
+    default: 'False'
+    hide: part
+
+-   id: len_tag_name
+    label: TSB tag name
+    dtype: string
+    default: '""'
+    hide: ${ 'none' if len(str(len_tag_name)) else 'part'}
+
+
+inputs:
+-   domain: message
+    id: command
+    optional: true
+-   domain: stream
+    dtype: ${type.type}
+    multiplicity: ${nchan}
+
+outputs:
+-   domain: message
+    id: async_msgs
+    optional: true
+
+templates:
+    imports: |-
+        from gnuradio import uhd
+        import time
+    make: |
+        uhd.usrp_sink(
+            % if clock_rate():
+            ",".join((${dev_addr}, ${dev_args}, "master_clock_rate=${clock_rate}")),
+            % else:
+            ",".join((${dev_addr}, ${dev_args})),
+            % endif
+            uhd.stream_args(
+                cpu_format="${type}",
+                % if otw:
+                otw_format="${otw}",
+                % endif
+                % if stream_args:
+                args=${stream_args},
+                % endif
+                % if eval(stream_chans):
+                channels=${stream_chans},
+                % else:
+                channels=list(range(0,${nchan})),
+                % endif
+            ),
+            % if len_tag_name:
+            ${len_tag_name},
+            % endif
+        )
+        % if context.get('num_mboards')() > 0:
+        % if context.get('clock_source0')():
+        self.${id}.set_clock_source(${clock_source0}, 0)
+        % endif
+        % if context.get('time_source0')():
+        self.${id}.set_time_source(${time_source0}, 0)
+        % endif
+        % if context.get('sd_spec0')():
+        self.${id}.set_subdev_spec(${sd_spec0}, 0)
+        % endif
+        % endif
+        % if context.get('num_mboards')() > 1:
+        % if context.get('clock_source1')():
+        self.${id}.set_clock_source(${clock_source1}, 1)
+        % endif
+        % if context.get('time_source1')():
+        self.${id}.set_time_source(${time_source1}, 1)
+        % endif
+        % if context.get('sd_spec1')():
+        self.${id}.set_subdev_spec(${sd_spec1}, 1)
+        % endif
+        % endif
+        % if context.get('num_mboards')() > 2:
+        % if context.get('clock_source2')():
+        self.${id}.set_clock_source(${clock_source2}, 2)
+        % endif
+        % if context.get('time_source2')():
+        self.${id}.set_time_source(${time_source2}, 2)
+        % endif
+        % if context.get('sd_spec2')():
+        self.${id}.set_subdev_spec(${sd_spec2}, 2)
+        % endif
+        % endif
+        % if context.get('num_mboards')() > 3:
+        % if context.get('clock_source3')():
+        self.${id}.set_clock_source(${clock_source3}, 3)
+        % endif
+        % if context.get('time_source3')():
+        self.${id}.set_time_source(${time_source3}, 3)
+        % endif
+        % if context.get('sd_spec3')():
+        self.${id}.set_subdev_spec(${sd_spec3}, 3)
+        % endif
+        % endif
+        % if context.get('num_mboards')() > 4:
+        % if context.get('clock_source4')():
+        self.${id}.set_clock_source(${clock_source4}, 4)
+        % endif
+        % if context.get('time_source4')():
+        self.${id}.set_time_source(${time_source4}, 4)
+        % endif
+        % if context.get('sd_spec4')():
+        self.${id}.set_subdev_spec(${sd_spec4}, 4)
+        % endif
+        % endif
+        % if context.get('num_mboards')() > 5:
+        % if context.get('clock_source5')():
+        self.${id}.set_clock_source(${clock_source5}, 5)
+        % endif
+        % if context.get('time_source5')():
+        self.${id}.set_time_source(${time_source5}, 5)
+        % endif
+        % if context.get('sd_spec5')():
+        self.${id}.set_subdev_spec(${sd_spec5}, 5)
+        % endif
+        % endif
+        % if context.get('num_mboards')() > 6:
+        % if context.get('clock_source6')():
+        self.${id}.set_clock_source(${clock_source6}, 6)
+        % endif
+        % if context.get('time_source6')():
+        self.${id}.set_time_source(${time_source6}, 6)
+        % endif
+        % if context.get('sd_spec6')():
+        self.${id}.set_subdev_spec(${sd_spec6}, 6)
+        % endif
+        % endif
+        % if context.get('num_mboards')() > 7:
+        % if context.get('clock_source7')():
+        self.${id}.set_clock_source(${clock_source7}, 7)
+        % endif
+        % if context.get('time_source7')():
+        self.${id}.set_time_source(${time_source7}, 7)
+        % endif
+        % if context.get('sd_spec7')():
+        self.${id}.set_subdev_spec(${sd_spec7}, 7)
+        % endif
+        % endif
+        self.${id}.set_samp_rate(${samp_rate})
+        % if sync == 'sync':
+        self.${id}.set_time_unknown_pps(uhd.time_spec(0))
+        % elif sync == 'pc_clock':
+        self.${id}.set_time_now(uhd.time_spec(time.time()), uhd.ALL_MBOARDS)
+        % elif sync == 'pc_clock_next_pps':
+        _last_pps_time = self.${id}.get_time_last_pps().get_real_secs()
+        # Poll get_time_last_pps() every 50 ms until a change is seen
+        while(self.${id}.get_time_last_pps().get_real_secs() == _last_pps_time):
+            time.sleep(0.05)
+        # Set the time to PC time on next PPS
+        self.${id}.set_time_next_pps(uhd.time_spec(int(time.time()) + 1.0))
+        # Sleep 1 second to ensure next PPS has come
+        time.sleep(1)
+        % elif sync == 'gps_time':
+        # Set the time to GPS time on next PPS
+        # get_mboard_sensor("gps_time") returns just after the PPS edge,
+        # thus add one second and set the time on the next PPS
+        self.${id}.set_time_next_pps(uhd.time_spec(self.${id}.get_mboard_sensor("gps_time").to_int() + 1.0))
+        # Sleep 1 second to ensure next PPS has come
+        time.sleep(1)
+        % else:
+        # No synchronization enforced.
+        % endif
+
+        % if context.get('nchan')() > 0:
+        self.${id}.set_center_freq(${center_freq0}, 0)
+        % if context.get('ant0')():
+        self.${id}.set_antenna(${ant0}, 0)
+        % endif
+        % if context.get('bw0')():
+        self.${id}.set_bandwidth(${bw0}, 0)
+        % endif
+        % if context.get('gain_type' + '0')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain0}, 0)
+        % elif context.get('gain_type' + '0')() == 'power':
+        self.${id}.set_power_reference(${gain0}, 0)
+        % else:
+        self.${id}.set_gain(${gain0}, 0)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source0}, uhd.ALL_LOS, 0)
+        self.${id}.set_lo_export_enabled(${lo_export0}, uhd.ALL_LOS, 0)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 1:
+        self.${id}.set_center_freq(${center_freq1}, 1)
+        % if context.get('ant1')():
+        self.${id}.set_antenna(${ant1}, 1)
+        % endif
+        % if context.get('bw1')():
+        self.${id}.set_bandwidth(${bw1}, 1)
+        % endif
+        % if context.get('gain_type' + '1')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain1}, 1)
+        % elif context.get('gain_type' + '1')() == 'power':
+        self.${id}.set_power_reference(${gain1}, 1)
+        % else:
+        self.${id}.set_gain(${gain1}, 1)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source1}, uhd.ALL_LOS, 1)
+        self.${id}.set_lo_export_enabled(${lo_export1}, uhd.ALL_LOS, 1)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 2:
+        self.${id}.set_center_freq(${center_freq2}, 2)
+        % if context.get('ant2')():
+        self.${id}.set_antenna(${ant2}, 2)
+        % endif
+        % if context.get('bw2')():
+        self.${id}.set_bandwidth(${bw2}, 2)
+        % endif
+        % if context.get('gain_type' + '2')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain2}, 2)
+        % elif context.get('gain_type' + '2')() == 'power':
+        self.${id}.set_power_reference(${gain2}, 2)
+        % else:
+        self.${id}.set_gain(${gain2}, 2)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source2}, uhd.ALL_LOS, 2)
+        self.${id}.set_lo_export_enabled(${lo_export2}, uhd.ALL_LOS, 2)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 3:
+        self.${id}.set_center_freq(${center_freq3}, 3)
+        % if context.get('ant3')():
+        self.${id}.set_antenna(${ant3}, 3)
+        % endif
+        % if context.get('bw3')():
+        self.${id}.set_bandwidth(${bw3}, 3)
+        % endif
+        % if context.get('gain_type' + '3')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain3}, 3)
+        % elif context.get('gain_type' + '3')() == 'power':
+        self.${id}.set_power_reference(${gain3}, 3)
+        % else:
+        self.${id}.set_gain(${gain3}, 3)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source3}, uhd.ALL_LOS, 3)
+        self.${id}.set_lo_export_enabled(${lo_export3}, uhd.ALL_LOS, 3)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 4:
+        self.${id}.set_center_freq(${center_freq4}, 4)
+        % if context.get('ant4')():
+        self.${id}.set_antenna(${ant4}, 4)
+        % endif
+        % if context.get('bw4')():
+        self.${id}.set_bandwidth(${bw4}, 4)
+        % endif
+        % if context.get('gain_type' + '4')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain4}, 4)
+        % elif context.get('gain_type' + '4')() == 'power':
+        self.${id}.set_power_reference(${gain4}, 4)
+        % else:
+        self.${id}.set_gain(${gain4}, 4)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source4}, uhd.ALL_LOS, 4)
+        self.${id}.set_lo_export_enabled(${lo_export4}, uhd.ALL_LOS, 4)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 5:
+        self.${id}.set_center_freq(${center_freq5}, 5)
+        % if context.get('ant5')():
+        self.${id}.set_antenna(${ant5}, 5)
+        % endif
+        % if context.get('bw5')():
+        self.${id}.set_bandwidth(${bw5}, 5)
+        % endif
+        % if context.get('gain_type' + '5')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain5}, 5)
+        % elif context.get('gain_type' + '5')() == 'power':
+        self.${id}.set_power_reference(${gain5}, 5)
+        % else:
+        self.${id}.set_gain(${gain5}, 5)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source5}, uhd.ALL_LOS, 5)
+        self.${id}.set_lo_export_enabled(${lo_export5}, uhd.ALL_LOS, 5)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 6:
+        self.${id}.set_center_freq(${center_freq6}, 6)
+        % if context.get('ant6')():
+        self.${id}.set_antenna(${ant6}, 6)
+        % endif
+        % if context.get('bw6')():
+        self.${id}.set_bandwidth(${bw6}, 6)
+        % endif
+        % if context.get('gain_type' + '6')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain6}, 6)
+        % elif context.get('gain_type' + '6')() == 'power':
+        self.${id}.set_power_reference(${gain6}, 6)
+        % else:
+        self.${id}.set_gain(${gain6}, 6)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source6}, uhd.ALL_LOS, 6)
+        self.${id}.set_lo_export_enabled(${lo_export6}, uhd.ALL_LOS, 6)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 7:
+        self.${id}.set_center_freq(${center_freq7}, 7)
+        % if context.get('ant7')():
+        self.${id}.set_antenna(${ant7}, 7)
+        % endif
+        % if context.get('bw7')():
+        self.${id}.set_bandwidth(${bw7}, 7)
+        % endif
+        % if context.get('gain_type' + '7')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain7}, 7)
+        % elif context.get('gain_type' + '7')() == 'power':
+        self.${id}.set_power_reference(${gain7}, 7)
+        % else:
+        self.${id}.set_gain(${gain7}, 7)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source7}, uhd.ALL_LOS, 7)
+        self.${id}.set_lo_export_enabled(${lo_export7}, uhd.ALL_LOS, 7)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 8:
+        self.${id}.set_center_freq(${center_freq8}, 8)
+        % if context.get('ant8')():
+        self.${id}.set_antenna(${ant8}, 8)
+        % endif
+        % if context.get('bw8')():
+        self.${id}.set_bandwidth(${bw8}, 8)
+        % endif
+        % if context.get('gain_type' + '8')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain8}, 8)
+        % elif context.get('gain_type' + '8')() == 'power':
+        self.${id}.set_power_reference(${gain8}, 8)
+        % else:
+        self.${id}.set_gain(${gain8}, 8)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source8}, uhd.ALL_LOS, 8)
+        self.${id}.set_lo_export_enabled(${lo_export8}, uhd.ALL_LOS, 8)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 9:
+        self.${id}.set_center_freq(${center_freq9}, 9)
+        % if context.get('ant9')():
+        self.${id}.set_antenna(${ant9}, 9)
+        % endif
+        % if context.get('bw9')():
+        self.${id}.set_bandwidth(${bw9}, 9)
+        % endif
+        % if context.get('gain_type' + '9')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain9}, 9)
+        % elif context.get('gain_type' + '9')() == 'power':
+        self.${id}.set_power_reference(${gain9}, 9)
+        % else:
+        self.${id}.set_gain(${gain9}, 9)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source9}, uhd.ALL_LOS, 9)
+        self.${id}.set_lo_export_enabled(${lo_export9}, uhd.ALL_LOS, 9)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 10:
+        self.${id}.set_center_freq(${center_freq10}, 10)
+        % if context.get('ant10')():
+        self.${id}.set_antenna(${ant10}, 10)
+        % endif
+        % if context.get('bw10')():
+        self.${id}.set_bandwidth(${bw10}, 10)
+        % endif
+        % if context.get('gain_type' + '10')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain10}, 10)
+        % elif context.get('gain_type' + '10')() == 'power':
+        self.${id}.set_power_reference(${gain10}, 10)
+        % else:
+        self.${id}.set_gain(${gain10}, 10)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source10}, uhd.ALL_LOS, 10)
+        self.${id}.set_lo_export_enabled(${lo_export10}, uhd.ALL_LOS, 10)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 11:
+        self.${id}.set_center_freq(${center_freq11}, 11)
+        % if context.get('ant11')():
+        self.${id}.set_antenna(${ant11}, 11)
+        % endif
+        % if context.get('bw11')():
+        self.${id}.set_bandwidth(${bw11}, 11)
+        % endif
+        % if context.get('gain_type' + '11')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain11}, 11)
+        % elif context.get('gain_type' + '11')() == 'power':
+        self.${id}.set_power_reference(${gain11}, 11)
+        % else:
+        self.${id}.set_gain(${gain11}, 11)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source11}, uhd.ALL_LOS, 11)
+        self.${id}.set_lo_export_enabled(${lo_export11}, uhd.ALL_LOS, 11)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 12:
+        self.${id}.set_center_freq(${center_freq12}, 12)
+        % if context.get('ant12')():
+        self.${id}.set_antenna(${ant12}, 12)
+        % endif
+        % if context.get('bw12')():
+        self.${id}.set_bandwidth(${bw12}, 12)
+        % endif
+        % if context.get('gain_type' + '12')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain12}, 12)
+        % elif context.get('gain_type' + '12')() == 'power':
+        self.${id}.set_power_reference(${gain12}, 12)
+        % else:
+        self.${id}.set_gain(${gain12}, 12)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source12}, uhd.ALL_LOS, 12)
+        self.${id}.set_lo_export_enabled(${lo_export12}, uhd.ALL_LOS, 12)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 13:
+        self.${id}.set_center_freq(${center_freq13}, 13)
+        % if context.get('ant13')():
+        self.${id}.set_antenna(${ant13}, 13)
+        % endif
+        % if context.get('bw13')():
+        self.${id}.set_bandwidth(${bw13}, 13)
+        % endif
+        % if context.get('gain_type' + '13')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain13}, 13)
+        % elif context.get('gain_type' + '13')() == 'power':
+        self.${id}.set_power_reference(${gain13}, 13)
+        % else:
+        self.${id}.set_gain(${gain13}, 13)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source13}, uhd.ALL_LOS, 13)
+        self.${id}.set_lo_export_enabled(${lo_export13}, uhd.ALL_LOS, 13)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 14:
+        self.${id}.set_center_freq(${center_freq14}, 14)
+        % if context.get('ant14')():
+        self.${id}.set_antenna(${ant14}, 14)
+        % endif
+        % if context.get('bw14')():
+        self.${id}.set_bandwidth(${bw14}, 14)
+        % endif
+        % if context.get('gain_type' + '14')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain14}, 14)
+        % elif context.get('gain_type' + '14')() == 'power':
+        self.${id}.set_power_reference(${gain14}, 14)
+        % else:
+        self.${id}.set_gain(${gain14}, 14)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source14}, uhd.ALL_LOS, 14)
+        self.${id}.set_lo_export_enabled(${lo_export14}, uhd.ALL_LOS, 14)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 15:
+        self.${id}.set_center_freq(${center_freq15}, 15)
+        % if context.get('ant15')():
+        self.${id}.set_antenna(${ant15}, 15)
+        % endif
+        % if context.get('bw15')():
+        self.${id}.set_bandwidth(${bw15}, 15)
+        % endif
+        % if context.get('gain_type' + '15')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain15}, 15)
+        % elif context.get('gain_type' + '15')() == 'power':
+        self.${id}.set_power_reference(${gain15}, 15)
+        % else:
+        self.${id}.set_gain(${gain15}, 15)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source15}, uhd.ALL_LOS, 15)
+        self.${id}.set_lo_export_enabled(${lo_export15}, uhd.ALL_LOS, 15)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 16:
+        self.${id}.set_center_freq(${center_freq16}, 16)
+        % if context.get('ant16')():
+        self.${id}.set_antenna(${ant16}, 16)
+        % endif
+        % if context.get('bw16')():
+        self.${id}.set_bandwidth(${bw16}, 16)
+        % endif
+        % if context.get('gain_type' + '16')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain16}, 16)
+        % elif context.get('gain_type' + '16')() == 'power':
+        self.${id}.set_power_reference(${gain16}, 16)
+        % else:
+        self.${id}.set_gain(${gain16}, 16)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source16}, uhd.ALL_LOS, 16)
+        self.${id}.set_lo_export_enabled(${lo_export16}, uhd.ALL_LOS, 16)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 17:
+        self.${id}.set_center_freq(${center_freq17}, 17)
+        % if context.get('ant17')():
+        self.${id}.set_antenna(${ant17}, 17)
+        % endif
+        % if context.get('bw17')():
+        self.${id}.set_bandwidth(${bw17}, 17)
+        % endif
+        % if context.get('gain_type' + '17')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain17}, 17)
+        % elif context.get('gain_type' + '17')() == 'power':
+        self.${id}.set_power_reference(${gain17}, 17)
+        % else:
+        self.${id}.set_gain(${gain17}, 17)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source17}, uhd.ALL_LOS, 17)
+        self.${id}.set_lo_export_enabled(${lo_export17}, uhd.ALL_LOS, 17)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 18:
+        self.${id}.set_center_freq(${center_freq18}, 18)
+        % if context.get('ant18')():
+        self.${id}.set_antenna(${ant18}, 18)
+        % endif
+        % if context.get('bw18')():
+        self.${id}.set_bandwidth(${bw18}, 18)
+        % endif
+        % if context.get('gain_type' + '18')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain18}, 18)
+        % elif context.get('gain_type' + '18')() == 'power':
+        self.${id}.set_power_reference(${gain18}, 18)
+        % else:
+        self.${id}.set_gain(${gain18}, 18)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source18}, uhd.ALL_LOS, 18)
+        self.${id}.set_lo_export_enabled(${lo_export18}, uhd.ALL_LOS, 18)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 19:
+        self.${id}.set_center_freq(${center_freq19}, 19)
+        % if context.get('ant19')():
+        self.${id}.set_antenna(${ant19}, 19)
+        % endif
+        % if context.get('bw19')():
+        self.${id}.set_bandwidth(${bw19}, 19)
+        % endif
+        % if context.get('gain_type' + '19')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain19}, 19)
+        % elif context.get('gain_type' + '19')() == 'power':
+        self.${id}.set_power_reference(${gain19}, 19)
+        % else:
+        self.${id}.set_gain(${gain19}, 19)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source19}, uhd.ALL_LOS, 19)
+        self.${id}.set_lo_export_enabled(${lo_export19}, uhd.ALL_LOS, 19)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 20:
+        self.${id}.set_center_freq(${center_freq20}, 20)
+        % if context.get('ant20')():
+        self.${id}.set_antenna(${ant20}, 20)
+        % endif
+        % if context.get('bw20')():
+        self.${id}.set_bandwidth(${bw20}, 20)
+        % endif
+        % if context.get('gain_type' + '20')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain20}, 20)
+        % elif context.get('gain_type' + '20')() == 'power':
+        self.${id}.set_power_reference(${gain20}, 20)
+        % else:
+        self.${id}.set_gain(${gain20}, 20)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source20}, uhd.ALL_LOS, 20)
+        self.${id}.set_lo_export_enabled(${lo_export20}, uhd.ALL_LOS, 20)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 21:
+        self.${id}.set_center_freq(${center_freq21}, 21)
+        % if context.get('ant21')():
+        self.${id}.set_antenna(${ant21}, 21)
+        % endif
+        % if context.get('bw21')():
+        self.${id}.set_bandwidth(${bw21}, 21)
+        % endif
+        % if context.get('gain_type' + '21')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain21}, 21)
+        % elif context.get('gain_type' + '21')() == 'power':
+        self.${id}.set_power_reference(${gain21}, 21)
+        % else:
+        self.${id}.set_gain(${gain21}, 21)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source21}, uhd.ALL_LOS, 21)
+        self.${id}.set_lo_export_enabled(${lo_export21}, uhd.ALL_LOS, 21)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 22:
+        self.${id}.set_center_freq(${center_freq22}, 22)
+        % if context.get('ant22')():
+        self.${id}.set_antenna(${ant22}, 22)
+        % endif
+        % if context.get('bw22')():
+        self.${id}.set_bandwidth(${bw22}, 22)
+        % endif
+        % if context.get('gain_type' + '22')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain22}, 22)
+        % elif context.get('gain_type' + '22')() == 'power':
+        self.${id}.set_power_reference(${gain22}, 22)
+        % else:
+        self.${id}.set_gain(${gain22}, 22)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source22}, uhd.ALL_LOS, 22)
+        self.${id}.set_lo_export_enabled(${lo_export22}, uhd.ALL_LOS, 22)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 23:
+        self.${id}.set_center_freq(${center_freq23}, 23)
+        % if context.get('ant23')():
+        self.${id}.set_antenna(${ant23}, 23)
+        % endif
+        % if context.get('bw23')():
+        self.${id}.set_bandwidth(${bw23}, 23)
+        % endif
+        % if context.get('gain_type' + '23')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain23}, 23)
+        % elif context.get('gain_type' + '23')() == 'power':
+        self.${id}.set_power_reference(${gain23}, 23)
+        % else:
+        self.${id}.set_gain(${gain23}, 23)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source23}, uhd.ALL_LOS, 23)
+        self.${id}.set_lo_export_enabled(${lo_export23}, uhd.ALL_LOS, 23)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 24:
+        self.${id}.set_center_freq(${center_freq24}, 24)
+        % if context.get('ant24')():
+        self.${id}.set_antenna(${ant24}, 24)
+        % endif
+        % if context.get('bw24')():
+        self.${id}.set_bandwidth(${bw24}, 24)
+        % endif
+        % if context.get('gain_type' + '24')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain24}, 24)
+        % elif context.get('gain_type' + '24')() == 'power':
+        self.${id}.set_power_reference(${gain24}, 24)
+        % else:
+        self.${id}.set_gain(${gain24}, 24)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source24}, uhd.ALL_LOS, 24)
+        self.${id}.set_lo_export_enabled(${lo_export24}, uhd.ALL_LOS, 24)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 25:
+        self.${id}.set_center_freq(${center_freq25}, 25)
+        % if context.get('ant25')():
+        self.${id}.set_antenna(${ant25}, 25)
+        % endif
+        % if context.get('bw25')():
+        self.${id}.set_bandwidth(${bw25}, 25)
+        % endif
+        % if context.get('gain_type' + '25')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain25}, 25)
+        % elif context.get('gain_type' + '25')() == 'power':
+        self.${id}.set_power_reference(${gain25}, 25)
+        % else:
+        self.${id}.set_gain(${gain25}, 25)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source25}, uhd.ALL_LOS, 25)
+        self.${id}.set_lo_export_enabled(${lo_export25}, uhd.ALL_LOS, 25)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 26:
+        self.${id}.set_center_freq(${center_freq26}, 26)
+        % if context.get('ant26')():
+        self.${id}.set_antenna(${ant26}, 26)
+        % endif
+        % if context.get('bw26')():
+        self.${id}.set_bandwidth(${bw26}, 26)
+        % endif
+        % if context.get('gain_type' + '26')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain26}, 26)
+        % elif context.get('gain_type' + '26')() == 'power':
+        self.${id}.set_power_reference(${gain26}, 26)
+        % else:
+        self.${id}.set_gain(${gain26}, 26)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source26}, uhd.ALL_LOS, 26)
+        self.${id}.set_lo_export_enabled(${lo_export26}, uhd.ALL_LOS, 26)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 27:
+        self.${id}.set_center_freq(${center_freq27}, 27)
+        % if context.get('ant27')():
+        self.${id}.set_antenna(${ant27}, 27)
+        % endif
+        % if context.get('bw27')():
+        self.${id}.set_bandwidth(${bw27}, 27)
+        % endif
+        % if context.get('gain_type' + '27')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain27}, 27)
+        % elif context.get('gain_type' + '27')() == 'power':
+        self.${id}.set_power_reference(${gain27}, 27)
+        % else:
+        self.${id}.set_gain(${gain27}, 27)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source27}, uhd.ALL_LOS, 27)
+        self.${id}.set_lo_export_enabled(${lo_export27}, uhd.ALL_LOS, 27)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 28:
+        self.${id}.set_center_freq(${center_freq28}, 28)
+        % if context.get('ant28')():
+        self.${id}.set_antenna(${ant28}, 28)
+        % endif
+        % if context.get('bw28')():
+        self.${id}.set_bandwidth(${bw28}, 28)
+        % endif
+        % if context.get('gain_type' + '28')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain28}, 28)
+        % elif context.get('gain_type' + '28')() == 'power':
+        self.${id}.set_power_reference(${gain28}, 28)
+        % else:
+        self.${id}.set_gain(${gain28}, 28)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source28}, uhd.ALL_LOS, 28)
+        self.${id}.set_lo_export_enabled(${lo_export28}, uhd.ALL_LOS, 28)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 29:
+        self.${id}.set_center_freq(${center_freq29}, 29)
+        % if context.get('ant29')():
+        self.${id}.set_antenna(${ant29}, 29)
+        % endif
+        % if context.get('bw29')():
+        self.${id}.set_bandwidth(${bw29}, 29)
+        % endif
+        % if context.get('gain_type' + '29')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain29}, 29)
+        % elif context.get('gain_type' + '29')() == 'power':
+        self.${id}.set_power_reference(${gain29}, 29)
+        % else:
+        self.${id}.set_gain(${gain29}, 29)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source29}, uhd.ALL_LOS, 29)
+        self.${id}.set_lo_export_enabled(${lo_export29}, uhd.ALL_LOS, 29)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 30:
+        self.${id}.set_center_freq(${center_freq30}, 30)
+        % if context.get('ant30')():
+        self.${id}.set_antenna(${ant30}, 30)
+        % endif
+        % if context.get('bw30')():
+        self.${id}.set_bandwidth(${bw30}, 30)
+        % endif
+        % if context.get('gain_type' + '30')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain30}, 30)
+        % elif context.get('gain_type' + '30')() == 'power':
+        self.${id}.set_power_reference(${gain30}, 30)
+        % else:
+        self.${id}.set_gain(${gain30}, 30)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source30}, uhd.ALL_LOS, 30)
+        self.${id}.set_lo_export_enabled(${lo_export30}, uhd.ALL_LOS, 30)
+        % endif
+        % endif  # nchan > n
+        % if context.get('nchan')() > 31:
+        self.${id}.set_center_freq(${center_freq31}, 31)
+        % if context.get('ant31')():
+        self.${id}.set_antenna(${ant31}, 31)
+        % endif
+        % if context.get('bw31')():
+        self.${id}.set_bandwidth(${bw31}, 31)
+        % endif
+        % if context.get('gain_type' + '31')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain31}, 31)
+        % elif context.get('gain_type' + '31')() == 'power':
+        self.${id}.set_power_reference(${gain31}, 31)
+        % else:
+        self.${id}.set_gain(${gain31}, 31)
+        % endif
+
+        % if context.get('show_lo_controls')():
+        self.${id}.set_lo_source(${lo_source31}, uhd.ALL_LOS, 31)
+        self.${id}.set_lo_export_enabled(${lo_export31}, uhd.ALL_LOS, 31)
+        % endif
+        % endif  # nchan > n
+        % if start_time() >= 0.0:
+        self.${id}.set_start_time(uhd.time_spec(${start_time}))
+        % endif
+    callbacks:
+    -   set_samp_rate(${samp_rate})
+    -   set_center_freq(${center_freq0}, 0)
+    -   |
+        % if context.get('gain_type' + '0')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain0}, 0)
+        % elif context.get('gain_type' + '0')() == 'power':
+        self.${id}.set_power_reference(${gain0}, 0)
+        % else:
+        self.${id}.set_gain(${gain0}, 0)
+        % endif
+    -   ${'set_lo_source(' + lo_source0 + ', uhd.ALL_LOS, 0)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export0 + ', uhd.ALL_LOS, 0)' if show_lo_controls else ''}
+    -   set_antenna(${ant0}, 0)
+    -   set_bandwidth(${bw0}, 0)
+    -   set_center_freq(${center_freq1}, 1)
+    -   |
+        % if context.get('gain_type' + '1')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain1}, 1)
+        % elif context.get('gain_type' + '1')() == 'power':
+        self.${id}.set_power_reference(${gain1}, 1)
+        % else:
+        self.${id}.set_gain(${gain1}, 1)
+        % endif
+    -   ${'set_lo_source(' + lo_source1 + ', uhd.ALL_LOS, 1)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export1 + ', uhd.ALL_LOS, 1)' if show_lo_controls else ''}
+    -   set_antenna(${ant1}, 1)
+    -   set_bandwidth(${bw1}, 1)
+    -   set_center_freq(${center_freq2}, 2)
+    -   |
+        % if context.get('gain_type' + '2')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain2}, 2)
+        % elif context.get('gain_type' + '2')() == 'power':
+        self.${id}.set_power_reference(${gain2}, 2)
+        % else:
+        self.${id}.set_gain(${gain2}, 2)
+        % endif
+    -   ${'set_lo_source(' + lo_source2 + ', uhd.ALL_LOS, 2)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export2 + ', uhd.ALL_LOS, 2)' if show_lo_controls else ''}
+    -   set_antenna(${ant2}, 2)
+    -   set_bandwidth(${bw2}, 2)
+    -   set_center_freq(${center_freq3}, 3)
+    -   |
+        % if context.get('gain_type' + '3')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain3}, 3)
+        % elif context.get('gain_type' + '3')() == 'power':
+        self.${id}.set_power_reference(${gain3}, 3)
+        % else:
+        self.${id}.set_gain(${gain3}, 3)
+        % endif
+    -   ${'set_lo_source(' + lo_source3 + ', uhd.ALL_LOS, 3)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export3 + ', uhd.ALL_LOS, 3)' if show_lo_controls else ''}
+    -   set_antenna(${ant3}, 3)
+    -   set_bandwidth(${bw3}, 3)
+    -   set_center_freq(${center_freq4}, 4)
+    -   |
+        % if context.get('gain_type' + '4')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain4}, 4)
+        % elif context.get('gain_type' + '4')() == 'power':
+        self.${id}.set_power_reference(${gain4}, 4)
+        % else:
+        self.${id}.set_gain(${gain4}, 4)
+        % endif
+    -   ${'set_lo_source(' + lo_source4 + ', uhd.ALL_LOS, 4)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export4 + ', uhd.ALL_LOS, 4)' if show_lo_controls else ''}
+    -   set_antenna(${ant4}, 4)
+    -   set_bandwidth(${bw4}, 4)
+    -   set_center_freq(${center_freq5}, 5)
+    -   |
+        % if context.get('gain_type' + '5')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain5}, 5)
+        % elif context.get('gain_type' + '5')() == 'power':
+        self.${id}.set_power_reference(${gain5}, 5)
+        % else:
+        self.${id}.set_gain(${gain5}, 5)
+        % endif
+    -   ${'set_lo_source(' + lo_source5 + ', uhd.ALL_LOS, 5)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export5 + ', uhd.ALL_LOS, 5)' if show_lo_controls else ''}
+    -   set_antenna(${ant5}, 5)
+    -   set_bandwidth(${bw5}, 5)
+    -   set_center_freq(${center_freq6}, 6)
+    -   |
+        % if context.get('gain_type' + '6')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain6}, 6)
+        % elif context.get('gain_type' + '6')() == 'power':
+        self.${id}.set_power_reference(${gain6}, 6)
+        % else:
+        self.${id}.set_gain(${gain6}, 6)
+        % endif
+    -   ${'set_lo_source(' + lo_source6 + ', uhd.ALL_LOS, 6)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export6 + ', uhd.ALL_LOS, 6)' if show_lo_controls else ''}
+    -   set_antenna(${ant6}, 6)
+    -   set_bandwidth(${bw6}, 6)
+    -   set_center_freq(${center_freq7}, 7)
+    -   |
+        % if context.get('gain_type' + '7')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain7}, 7)
+        % elif context.get('gain_type' + '7')() == 'power':
+        self.${id}.set_power_reference(${gain7}, 7)
+        % else:
+        self.${id}.set_gain(${gain7}, 7)
+        % endif
+    -   ${'set_lo_source(' + lo_source7 + ', uhd.ALL_LOS, 7)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export7 + ', uhd.ALL_LOS, 7)' if show_lo_controls else ''}
+    -   set_antenna(${ant7}, 7)
+    -   set_bandwidth(${bw7}, 7)
+    -   set_center_freq(${center_freq8}, 8)
+    -   |
+        % if context.get('gain_type' + '8')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain8}, 8)
+        % elif context.get('gain_type' + '8')() == 'power':
+        self.${id}.set_power_reference(${gain8}, 8)
+        % else:
+        self.${id}.set_gain(${gain8}, 8)
+        % endif
+    -   ${'set_lo_source(' + lo_source8 + ', uhd.ALL_LOS, 8)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export8 + ', uhd.ALL_LOS, 8)' if show_lo_controls else ''}
+    -   set_antenna(${ant8}, 8)
+    -   set_bandwidth(${bw8}, 8)
+    -   set_center_freq(${center_freq9}, 9)
+    -   |
+        % if context.get('gain_type' + '9')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain9}, 9)
+        % elif context.get('gain_type' + '9')() == 'power':
+        self.${id}.set_power_reference(${gain9}, 9)
+        % else:
+        self.${id}.set_gain(${gain9}, 9)
+        % endif
+    -   ${'set_lo_source(' + lo_source9 + ', uhd.ALL_LOS, 9)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export9 + ', uhd.ALL_LOS, 9)' if show_lo_controls else ''}
+    -   set_antenna(${ant9}, 9)
+    -   set_bandwidth(${bw9}, 9)
+    -   set_center_freq(${center_freq10}, 10)
+    -   |
+        % if context.get('gain_type' + '10')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain10}, 10)
+        % elif context.get('gain_type' + '10')() == 'power':
+        self.${id}.set_power_reference(${gain10}, 10)
+        % else:
+        self.${id}.set_gain(${gain10}, 10)
+        % endif
+    -   ${'set_lo_source(' + lo_source10 + ', uhd.ALL_LOS, 10)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export10 + ', uhd.ALL_LOS, 10)' if show_lo_controls else ''}
+    -   set_antenna(${ant10}, 10)
+    -   set_bandwidth(${bw10}, 10)
+    -   set_center_freq(${center_freq11}, 11)
+    -   |
+        % if context.get('gain_type' + '11')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain11}, 11)
+        % elif context.get('gain_type' + '11')() == 'power':
+        self.${id}.set_power_reference(${gain11}, 11)
+        % else:
+        self.${id}.set_gain(${gain11}, 11)
+        % endif
+    -   ${'set_lo_source(' + lo_source11 + ', uhd.ALL_LOS, 11)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export11 + ', uhd.ALL_LOS, 11)' if show_lo_controls else ''}
+    -   set_antenna(${ant11}, 11)
+    -   set_bandwidth(${bw11}, 11)
+    -   set_center_freq(${center_freq12}, 12)
+    -   |
+        % if context.get('gain_type' + '12')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain12}, 12)
+        % elif context.get('gain_type' + '12')() == 'power':
+        self.${id}.set_power_reference(${gain12}, 12)
+        % else:
+        self.${id}.set_gain(${gain12}, 12)
+        % endif
+    -   ${'set_lo_source(' + lo_source12 + ', uhd.ALL_LOS, 12)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export12 + ', uhd.ALL_LOS, 12)' if show_lo_controls else ''}
+    -   set_antenna(${ant12}, 12)
+    -   set_bandwidth(${bw12}, 12)
+    -   set_center_freq(${center_freq13}, 13)
+    -   |
+        % if context.get('gain_type' + '13')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain13}, 13)
+        % elif context.get('gain_type' + '13')() == 'power':
+        self.${id}.set_power_reference(${gain13}, 13)
+        % else:
+        self.${id}.set_gain(${gain13}, 13)
+        % endif
+    -   ${'set_lo_source(' + lo_source13 + ', uhd.ALL_LOS, 13)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export13 + ', uhd.ALL_LOS, 13)' if show_lo_controls else ''}
+    -   set_antenna(${ant13}, 13)
+    -   set_bandwidth(${bw13}, 13)
+    -   set_center_freq(${center_freq14}, 14)
+    -   |
+        % if context.get('gain_type' + '14')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain14}, 14)
+        % elif context.get('gain_type' + '14')() == 'power':
+        self.${id}.set_power_reference(${gain14}, 14)
+        % else:
+        self.${id}.set_gain(${gain14}, 14)
+        % endif
+    -   ${'set_lo_source(' + lo_source14 + ', uhd.ALL_LOS, 14)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export14 + ', uhd.ALL_LOS, 14)' if show_lo_controls else ''}
+    -   set_antenna(${ant14}, 14)
+    -   set_bandwidth(${bw14}, 14)
+    -   set_center_freq(${center_freq15}, 15)
+    -   |
+        % if context.get('gain_type' + '15')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain15}, 15)
+        % elif context.get('gain_type' + '15')() == 'power':
+        self.${id}.set_power_reference(${gain15}, 15)
+        % else:
+        self.${id}.set_gain(${gain15}, 15)
+        % endif
+    -   ${'set_lo_source(' + lo_source15 + ', uhd.ALL_LOS, 15)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export15 + ', uhd.ALL_LOS, 15)' if show_lo_controls else ''}
+    -   set_antenna(${ant15}, 15)
+    -   set_bandwidth(${bw15}, 15)
+    -   set_center_freq(${center_freq16}, 16)
+    -   |
+        % if context.get('gain_type' + '16')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain16}, 16)
+        % elif context.get('gain_type' + '16')() == 'power':
+        self.${id}.set_power_reference(${gain16}, 16)
+        % else:
+        self.${id}.set_gain(${gain16}, 16)
+        % endif
+    -   ${'set_lo_source(' + lo_source16 + ', uhd.ALL_LOS, 16)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export16 + ', uhd.ALL_LOS, 16)' if show_lo_controls else ''}
+    -   set_antenna(${ant16}, 16)
+    -   set_bandwidth(${bw16}, 16)
+    -   set_center_freq(${center_freq17}, 17)
+    -   |
+        % if context.get('gain_type' + '17')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain17}, 17)
+        % elif context.get('gain_type' + '17')() == 'power':
+        self.${id}.set_power_reference(${gain17}, 17)
+        % else:
+        self.${id}.set_gain(${gain17}, 17)
+        % endif
+    -   ${'set_lo_source(' + lo_source17 + ', uhd.ALL_LOS, 17)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export17 + ', uhd.ALL_LOS, 17)' if show_lo_controls else ''}
+    -   set_antenna(${ant17}, 17)
+    -   set_bandwidth(${bw17}, 17)
+    -   set_center_freq(${center_freq18}, 18)
+    -   |
+        % if context.get('gain_type' + '18')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain18}, 18)
+        % elif context.get('gain_type' + '18')() == 'power':
+        self.${id}.set_power_reference(${gain18}, 18)
+        % else:
+        self.${id}.set_gain(${gain18}, 18)
+        % endif
+    -   ${'set_lo_source(' + lo_source18 + ', uhd.ALL_LOS, 18)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export18 + ', uhd.ALL_LOS, 18)' if show_lo_controls else ''}
+    -   set_antenna(${ant18}, 18)
+    -   set_bandwidth(${bw18}, 18)
+    -   set_center_freq(${center_freq19}, 19)
+    -   |
+        % if context.get('gain_type' + '19')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain19}, 19)
+        % elif context.get('gain_type' + '19')() == 'power':
+        self.${id}.set_power_reference(${gain19}, 19)
+        % else:
+        self.${id}.set_gain(${gain19}, 19)
+        % endif
+    -   ${'set_lo_source(' + lo_source19 + ', uhd.ALL_LOS, 19)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export19 + ', uhd.ALL_LOS, 19)' if show_lo_controls else ''}
+    -   set_antenna(${ant19}, 19)
+    -   set_bandwidth(${bw19}, 19)
+    -   set_center_freq(${center_freq20}, 20)
+    -   |
+        % if context.get('gain_type' + '20')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain20}, 20)
+        % elif context.get('gain_type' + '20')() == 'power':
+        self.${id}.set_power_reference(${gain20}, 20)
+        % else:
+        self.${id}.set_gain(${gain20}, 20)
+        % endif
+    -   ${'set_lo_source(' + lo_source20 + ', uhd.ALL_LOS, 20)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export20 + ', uhd.ALL_LOS, 20)' if show_lo_controls else ''}
+    -   set_antenna(${ant20}, 20)
+    -   set_bandwidth(${bw20}, 20)
+    -   set_center_freq(${center_freq21}, 21)
+    -   |
+        % if context.get('gain_type' + '21')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain21}, 21)
+        % elif context.get('gain_type' + '21')() == 'power':
+        self.${id}.set_power_reference(${gain21}, 21)
+        % else:
+        self.${id}.set_gain(${gain21}, 21)
+        % endif
+    -   ${'set_lo_source(' + lo_source21 + ', uhd.ALL_LOS, 21)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export21 + ', uhd.ALL_LOS, 21)' if show_lo_controls else ''}
+    -   set_antenna(${ant21}, 21)
+    -   set_bandwidth(${bw21}, 21)
+    -   set_center_freq(${center_freq22}, 22)
+    -   |
+        % if context.get('gain_type' + '22')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain22}, 22)
+        % elif context.get('gain_type' + '22')() == 'power':
+        self.${id}.set_power_reference(${gain22}, 22)
+        % else:
+        self.${id}.set_gain(${gain22}, 22)
+        % endif
+    -   ${'set_lo_source(' + lo_source22 + ', uhd.ALL_LOS, 22)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export22 + ', uhd.ALL_LOS, 22)' if show_lo_controls else ''}
+    -   set_antenna(${ant22}, 22)
+    -   set_bandwidth(${bw22}, 22)
+    -   set_center_freq(${center_freq23}, 23)
+    -   |
+        % if context.get('gain_type' + '23')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain23}, 23)
+        % elif context.get('gain_type' + '23')() == 'power':
+        self.${id}.set_power_reference(${gain23}, 23)
+        % else:
+        self.${id}.set_gain(${gain23}, 23)
+        % endif
+    -   ${'set_lo_source(' + lo_source23 + ', uhd.ALL_LOS, 23)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export23 + ', uhd.ALL_LOS, 23)' if show_lo_controls else ''}
+    -   set_antenna(${ant23}, 23)
+    -   set_bandwidth(${bw23}, 23)
+    -   set_center_freq(${center_freq24}, 24)
+    -   |
+        % if context.get('gain_type' + '24')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain24}, 24)
+        % elif context.get('gain_type' + '24')() == 'power':
+        self.${id}.set_power_reference(${gain24}, 24)
+        % else:
+        self.${id}.set_gain(${gain24}, 24)
+        % endif
+    -   ${'set_lo_source(' + lo_source24 + ', uhd.ALL_LOS, 24)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export24 + ', uhd.ALL_LOS, 24)' if show_lo_controls else ''}
+    -   set_antenna(${ant24}, 24)
+    -   set_bandwidth(${bw24}, 24)
+    -   set_center_freq(${center_freq25}, 25)
+    -   |
+        % if context.get('gain_type' + '25')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain25}, 25)
+        % elif context.get('gain_type' + '25')() == 'power':
+        self.${id}.set_power_reference(${gain25}, 25)
+        % else:
+        self.${id}.set_gain(${gain25}, 25)
+        % endif
+    -   ${'set_lo_source(' + lo_source25 + ', uhd.ALL_LOS, 25)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export25 + ', uhd.ALL_LOS, 25)' if show_lo_controls else ''}
+    -   set_antenna(${ant25}, 25)
+    -   set_bandwidth(${bw25}, 25)
+    -   set_center_freq(${center_freq26}, 26)
+    -   |
+        % if context.get('gain_type' + '26')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain26}, 26)
+        % elif context.get('gain_type' + '26')() == 'power':
+        self.${id}.set_power_reference(${gain26}, 26)
+        % else:
+        self.${id}.set_gain(${gain26}, 26)
+        % endif
+    -   ${'set_lo_source(' + lo_source26 + ', uhd.ALL_LOS, 26)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export26 + ', uhd.ALL_LOS, 26)' if show_lo_controls else ''}
+    -   set_antenna(${ant26}, 26)
+    -   set_bandwidth(${bw26}, 26)
+    -   set_center_freq(${center_freq27}, 27)
+    -   |
+        % if context.get('gain_type' + '27')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain27}, 27)
+        % elif context.get('gain_type' + '27')() == 'power':
+        self.${id}.set_power_reference(${gain27}, 27)
+        % else:
+        self.${id}.set_gain(${gain27}, 27)
+        % endif
+    -   ${'set_lo_source(' + lo_source27 + ', uhd.ALL_LOS, 27)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export27 + ', uhd.ALL_LOS, 27)' if show_lo_controls else ''}
+    -   set_antenna(${ant27}, 27)
+    -   set_bandwidth(${bw27}, 27)
+    -   set_center_freq(${center_freq28}, 28)
+    -   |
+        % if context.get('gain_type' + '28')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain28}, 28)
+        % elif context.get('gain_type' + '28')() == 'power':
+        self.${id}.set_power_reference(${gain28}, 28)
+        % else:
+        self.${id}.set_gain(${gain28}, 28)
+        % endif
+    -   ${'set_lo_source(' + lo_source28 + ', uhd.ALL_LOS, 28)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export28 + ', uhd.ALL_LOS, 28)' if show_lo_controls else ''}
+    -   set_antenna(${ant28}, 28)
+    -   set_bandwidth(${bw28}, 28)
+    -   set_center_freq(${center_freq29}, 29)
+    -   |
+        % if context.get('gain_type' + '29')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain29}, 29)
+        % elif context.get('gain_type' + '29')() == 'power':
+        self.${id}.set_power_reference(${gain29}, 29)
+        % else:
+        self.${id}.set_gain(${gain29}, 29)
+        % endif
+    -   ${'set_lo_source(' + lo_source29 + ', uhd.ALL_LOS, 29)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export29 + ', uhd.ALL_LOS, 29)' if show_lo_controls else ''}
+    -   set_antenna(${ant29}, 29)
+    -   set_bandwidth(${bw29}, 29)
+    -   set_center_freq(${center_freq30}, 30)
+    -   |
+        % if context.get('gain_type' + '30')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain30}, 30)
+        % elif context.get('gain_type' + '30')() == 'power':
+        self.${id}.set_power_reference(${gain30}, 30)
+        % else:
+        self.${id}.set_gain(${gain30}, 30)
+        % endif
+    -   ${'set_lo_source(' + lo_source30 + ', uhd.ALL_LOS, 30)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export30 + ', uhd.ALL_LOS, 30)' if show_lo_controls else ''}
+    -   set_antenna(${ant30}, 30)
+    -   set_bandwidth(${bw30}, 30)
+    -   set_center_freq(${center_freq31}, 31)
+    -   |
+        % if context.get('gain_type' + '31')() == 'normalized':
+        self.${id}.set_normalized_gain(${gain31}, 31)
+        % elif context.get('gain_type' + '31')() == 'power':
+        self.${id}.set_power_reference(${gain31}, 31)
+        % else:
+        self.${id}.set_gain(${gain31}, 31)
+        % endif
+    -   ${'set_lo_source(' + lo_source31 + ', uhd.ALL_LOS, 31)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export31 + ', uhd.ALL_LOS, 31)' if show_lo_controls else ''}
+    -   set_antenna(${ant31}, 31)
+    -   set_bandwidth(${bw31}, 31)
+
+cpp_templates:
+    includes: [ '#include <gnuradio/uhd/usrp_sink.h>' ]
+    declarations: 'gr::uhd::usrp_sink::sptr ${id};'
+    make: |
+      this->${id} = gr::uhd::usrp_sink::make(
+         ::uhd::device_addr_t("${",".join((str(dev_addr).strip('"\''), str(dev_args).strip('"\''))) if len(str(dev_args).strip('"\'')) > 0 else dev_addr.strip('"\'')}"),
+         ::uhd::stream_args_t("${type}", "${otw}"));
+      % if context.get('num_mboards')() > 0:
+      % if context.get('sd_spec0')():
+      this->${id}->set_subdev_spec(${sd_spec0}, 0);
+      % endif
+      % if context.get('time_source0')():
+      this->${id}->set_time_source(${time_source0}, 0);
+      % endif
+      % if context.get('clock_source0')():
+      this->${id}->set_clock_source("${clock_source0.strip('\'')}", 0);
+      % endif
+      % endif
+      % if context.get('num_mboards')() > 1:
+      % if context.get('sd_spec1')():
+      this->${id}->set_subdev_spec(${sd_spec1}, 1);
+      % endif
+      % if context.get('time_source1')():
+      this->${id}->set_time_source(${time_source1}, 1);
+      % endif
+      % if context.get('clock_source1')():
+      this->${id}->set_clock_source("${clock_source1.strip('\'')}", 1);
+      % endif
+      % endif
+      % if context.get('num_mboards')() > 2:
+      % if context.get('sd_spec2')():
+      this->${id}->set_subdev_spec(${sd_spec2}, 2);
+      % endif
+      % if context.get('time_source2')():
+      this->${id}->set_time_source(${time_source2}, 2);
+      % endif
+      % if context.get('clock_source2')():
+      this->${id}->set_clock_source("${clock_source2.strip('\'')}", 2);
+      % endif
+      % endif
+      % if context.get('num_mboards')() > 3:
+      % if context.get('sd_spec3')():
+      this->${id}->set_subdev_spec(${sd_spec3}, 3);
+      % endif
+      % if context.get('time_source3')():
+      this->${id}->set_time_source(${time_source3}, 3);
+      % endif
+      % if context.get('clock_source3')():
+      this->${id}->set_clock_source("${clock_source3.strip('\'')}", 3);
+      % endif
+      % endif
+      % if context.get('num_mboards')() > 4:
+      % if context.get('sd_spec4')():
+      this->${id}->set_subdev_spec(${sd_spec4}, 4);
+      % endif
+      % if context.get('time_source4')():
+      this->${id}->set_time_source(${time_source4}, 4);
+      % endif
+      % if context.get('clock_source4')():
+      this->${id}->set_clock_source("${clock_source4.strip('\'')}", 4);
+      % endif
+      % endif
+      % if context.get('num_mboards')() > 5:
+      % if context.get('sd_spec5')():
+      this->${id}->set_subdev_spec(${sd_spec5}, 5);
+      % endif
+      % if context.get('time_source5')():
+      this->${id}->set_time_source(${time_source5}, 5);
+      % endif
+      % if context.get('clock_source5')():
+      this->${id}->set_clock_source("${clock_source5.strip('\'')}", 5);
+      % endif
+      % endif
+      % if context.get('num_mboards')() > 6:
+      % if context.get('sd_spec6')():
+      this->${id}->set_subdev_spec(${sd_spec6}, 6);
+      % endif
+      % if context.get('time_source6')():
+      this->${id}->set_time_source(${time_source6}, 6);
+      % endif
+      % if context.get('clock_source6')():
+      this->${id}->set_clock_source("${clock_source6.strip('\'')}", 6);
+      % endif
+      % endif
+      % if context.get('num_mboards')() > 7:
+      % if context.get('sd_spec7')():
+      this->${id}->set_subdev_spec(${sd_spec7}, 7);
+      % endif
+      % if context.get('time_source7')():
+      this->${id}->set_time_source(${time_source7}, 7);
+      % endif
+      % if context.get('clock_source7')():
+      this->${id}->set_clock_source("${clock_source7.strip('\'')}", 7);
+      % endif
+      % endif
+      this->${id}->set_samp_rate(${samp_rate});
+      % if sync == 'sync':
+      this->${id}->set_time_unknown_pps(::uhd::time_spec_t());
+      % elif sync == 'pc_clock':
+      this->${id}->set_time_now(::uhd::time_spec_t(time(NULL)), ::uhd::usrp::multi_usrp::ALL_MBOARDS);
+      % else:
+      // No synchronization enforced.
+      % endif
+
+      % if context.get('nchan')() > 0:
+      this->${id}->set_center_freq(${center_freq0}, 0);
+      % if context.get('gain_type' + '0')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain0}, 0);
+      % elif context.get('gain_type' + '0')() == 'power':
+      this->${id}->set_power_reference(${gain0}, 0);
+      % else:
+      this->${id}->set_gain(${gain0}, 0);
+      % endif
+      % if context.get('ant0')():
+      this->${id}->set_antenna(${ant0}, 0);
+      % endif
+      % if context.get('bw0')():
+      this->${id}->set_bandwidth(${bw0}, 0);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source0}, ::uhd::usrp::multi_usrp::ALL_LOS, 0);
+      this->${id}->set_lo_export_enabled(${lo_export0}, ::uhd::usrp::multi_usrp::ALL_LOS, 0);
+      % endif
+      % endif
+      % if context.get('nchan')() > 1:
+      this->${id}->set_center_freq(${center_freq1}, 1);
+      % if context.get('gain_type' + '1')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain1}, 1);
+      % elif context.get('gain_type' + '1')() == 'power':
+      this->${id}->set_power_reference(${gain1}, 1);
+      % else:
+      this->${id}->set_gain(${gain1}, 1);
+      % endif
+      % if context.get('ant1')():
+      this->${id}->set_antenna(${ant1}, 1);
+      % endif
+      % if context.get('bw1')():
+      this->${id}->set_bandwidth(${bw1}, 1);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source1}, ::uhd::usrp::multi_usrp::ALL_LOS, 1);
+      this->${id}->set_lo_export_enabled(${lo_export1}, ::uhd::usrp::multi_usrp::ALL_LOS, 1);
+      % endif
+      % endif
+      % if context.get('nchan')() > 2:
+      this->${id}->set_center_freq(${center_freq2}, 2);
+      % if context.get('gain_type' + '2')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain2}, 2);
+      % elif context.get('gain_type' + '2')() == 'power':
+      this->${id}->set_power_reference(${gain2}, 2);
+      % else:
+      this->${id}->set_gain(${gain2}, 2);
+      % endif
+      % if context.get('ant2')():
+      this->${id}->set_antenna(${ant2}, 2);
+      % endif
+      % if context.get('bw2')():
+      this->${id}->set_bandwidth(${bw2}, 2);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source2}, ::uhd::usrp::multi_usrp::ALL_LOS, 2);
+      this->${id}->set_lo_export_enabled(${lo_export2}, ::uhd::usrp::multi_usrp::ALL_LOS, 2);
+      % endif
+      % endif
+      % if context.get('nchan')() > 3:
+      this->${id}->set_center_freq(${center_freq3}, 3);
+      % if context.get('gain_type' + '3')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain3}, 3);
+      % elif context.get('gain_type' + '3')() == 'power':
+      this->${id}->set_power_reference(${gain3}, 3);
+      % else:
+      this->${id}->set_gain(${gain3}, 3);
+      % endif
+      % if context.get('ant3')():
+      this->${id}->set_antenna(${ant3}, 3);
+      % endif
+      % if context.get('bw3')():
+      this->${id}->set_bandwidth(${bw3}, 3);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source3}, ::uhd::usrp::multi_usrp::ALL_LOS, 3);
+      this->${id}->set_lo_export_enabled(${lo_export3}, ::uhd::usrp::multi_usrp::ALL_LOS, 3);
+      % endif
+      % endif
+      % if context.get('nchan')() > 4:
+      this->${id}->set_center_freq(${center_freq4}, 4);
+      % if context.get('gain_type' + '4')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain4}, 4);
+      % elif context.get('gain_type' + '4')() == 'power':
+      this->${id}->set_power_reference(${gain4}, 4);
+      % else:
+      this->${id}->set_gain(${gain4}, 4);
+      % endif
+      % if context.get('ant4')():
+      this->${id}->set_antenna(${ant4}, 4);
+      % endif
+      % if context.get('bw4')():
+      this->${id}->set_bandwidth(${bw4}, 4);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source4}, ::uhd::usrp::multi_usrp::ALL_LOS, 4);
+      this->${id}->set_lo_export_enabled(${lo_export4}, ::uhd::usrp::multi_usrp::ALL_LOS, 4);
+      % endif
+      % endif
+      % if context.get('nchan')() > 5:
+      this->${id}->set_center_freq(${center_freq5}, 5);
+      % if context.get('gain_type' + '5')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain5}, 5);
+      % elif context.get('gain_type' + '5')() == 'power':
+      this->${id}->set_power_reference(${gain5}, 5);
+      % else:
+      this->${id}->set_gain(${gain5}, 5);
+      % endif
+      % if context.get('ant5')():
+      this->${id}->set_antenna(${ant5}, 5);
+      % endif
+      % if context.get('bw5')():
+      this->${id}->set_bandwidth(${bw5}, 5);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source5}, ::uhd::usrp::multi_usrp::ALL_LOS, 5);
+      this->${id}->set_lo_export_enabled(${lo_export5}, ::uhd::usrp::multi_usrp::ALL_LOS, 5);
+      % endif
+      % endif
+      % if context.get('nchan')() > 6:
+      this->${id}->set_center_freq(${center_freq6}, 6);
+      % if context.get('gain_type' + '6')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain6}, 6);
+      % elif context.get('gain_type' + '6')() == 'power':
+      this->${id}->set_power_reference(${gain6}, 6);
+      % else:
+      this->${id}->set_gain(${gain6}, 6);
+      % endif
+      % if context.get('ant6')():
+      this->${id}->set_antenna(${ant6}, 6);
+      % endif
+      % if context.get('bw6')():
+      this->${id}->set_bandwidth(${bw6}, 6);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source6}, ::uhd::usrp::multi_usrp::ALL_LOS, 6);
+      this->${id}->set_lo_export_enabled(${lo_export6}, ::uhd::usrp::multi_usrp::ALL_LOS, 6);
+      % endif
+      % endif
+      % if context.get('nchan')() > 7:
+      this->${id}->set_center_freq(${center_freq7}, 7);
+      % if context.get('gain_type' + '7')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain7}, 7);
+      % elif context.get('gain_type' + '7')() == 'power':
+      this->${id}->set_power_reference(${gain7}, 7);
+      % else:
+      this->${id}->set_gain(${gain7}, 7);
+      % endif
+      % if context.get('ant7')():
+      this->${id}->set_antenna(${ant7}, 7);
+      % endif
+      % if context.get('bw7')():
+      this->${id}->set_bandwidth(${bw7}, 7);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source7}, ::uhd::usrp::multi_usrp::ALL_LOS, 7);
+      this->${id}->set_lo_export_enabled(${lo_export7}, ::uhd::usrp::multi_usrp::ALL_LOS, 7);
+      % endif
+      % endif
+      % if context.get('nchan')() > 8:
+      this->${id}->set_center_freq(${center_freq8}, 8);
+      % if context.get('gain_type' + '8')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain8}, 8);
+      % elif context.get('gain_type' + '8')() == 'power':
+      this->${id}->set_power_reference(${gain8}, 8);
+      % else:
+      this->${id}->set_gain(${gain8}, 8);
+      % endif
+      % if context.get('ant8')():
+      this->${id}->set_antenna(${ant8}, 8);
+      % endif
+      % if context.get('bw8')():
+      this->${id}->set_bandwidth(${bw8}, 8);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source8}, ::uhd::usrp::multi_usrp::ALL_LOS, 8);
+      this->${id}->set_lo_export_enabled(${lo_export8}, ::uhd::usrp::multi_usrp::ALL_LOS, 8);
+      % endif
+      % endif
+      % if context.get('nchan')() > 9:
+      this->${id}->set_center_freq(${center_freq9}, 9);
+      % if context.get('gain_type' + '9')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain9}, 9);
+      % elif context.get('gain_type' + '9')() == 'power':
+      this->${id}->set_power_reference(${gain9}, 9);
+      % else:
+      this->${id}->set_gain(${gain9}, 9);
+      % endif
+      % if context.get('ant9')():
+      this->${id}->set_antenna(${ant9}, 9);
+      % endif
+      % if context.get('bw9')():
+      this->${id}->set_bandwidth(${bw9}, 9);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source9}, ::uhd::usrp::multi_usrp::ALL_LOS, 9);
+      this->${id}->set_lo_export_enabled(${lo_export9}, ::uhd::usrp::multi_usrp::ALL_LOS, 9);
+      % endif
+      % endif
+      % if context.get('nchan')() > 10:
+      this->${id}->set_center_freq(${center_freq10}, 10);
+      % if context.get('gain_type' + '10')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain10}, 10);
+      % elif context.get('gain_type' + '10')() == 'power':
+      this->${id}->set_power_reference(${gain10}, 10);
+      % else:
+      this->${id}->set_gain(${gain10}, 10);
+      % endif
+      % if context.get('ant10')():
+      this->${id}->set_antenna(${ant10}, 10);
+      % endif
+      % if context.get('bw10')():
+      this->${id}->set_bandwidth(${bw10}, 10);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source10}, ::uhd::usrp::multi_usrp::ALL_LOS, 10);
+      this->${id}->set_lo_export_enabled(${lo_export10}, ::uhd::usrp::multi_usrp::ALL_LOS, 10);
+      % endif
+      % endif
+      % if context.get('nchan')() > 11:
+      this->${id}->set_center_freq(${center_freq11}, 11);
+      % if context.get('gain_type' + '11')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain11}, 11);
+      % elif context.get('gain_type' + '11')() == 'power':
+      this->${id}->set_power_reference(${gain11}, 11);
+      % else:
+      this->${id}->set_gain(${gain11}, 11);
+      % endif
+      % if context.get('ant11')():
+      this->${id}->set_antenna(${ant11}, 11);
+      % endif
+      % if context.get('bw11')():
+      this->${id}->set_bandwidth(${bw11}, 11);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source11}, ::uhd::usrp::multi_usrp::ALL_LOS, 11);
+      this->${id}->set_lo_export_enabled(${lo_export11}, ::uhd::usrp::multi_usrp::ALL_LOS, 11);
+      % endif
+      % endif
+      % if context.get('nchan')() > 12:
+      this->${id}->set_center_freq(${center_freq12}, 12);
+      % if context.get('gain_type' + '12')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain12}, 12);
+      % elif context.get('gain_type' + '12')() == 'power':
+      this->${id}->set_power_reference(${gain12}, 12);
+      % else:
+      this->${id}->set_gain(${gain12}, 12);
+      % endif
+      % if context.get('ant12')():
+      this->${id}->set_antenna(${ant12}, 12);
+      % endif
+      % if context.get('bw12')():
+      this->${id}->set_bandwidth(${bw12}, 12);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source12}, ::uhd::usrp::multi_usrp::ALL_LOS, 12);
+      this->${id}->set_lo_export_enabled(${lo_export12}, ::uhd::usrp::multi_usrp::ALL_LOS, 12);
+      % endif
+      % endif
+      % if context.get('nchan')() > 13:
+      this->${id}->set_center_freq(${center_freq13}, 13);
+      % if context.get('gain_type' + '13')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain13}, 13);
+      % elif context.get('gain_type' + '13')() == 'power':
+      this->${id}->set_power_reference(${gain13}, 13);
+      % else:
+      this->${id}->set_gain(${gain13}, 13);
+      % endif
+      % if context.get('ant13')():
+      this->${id}->set_antenna(${ant13}, 13);
+      % endif
+      % if context.get('bw13')():
+      this->${id}->set_bandwidth(${bw13}, 13);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source13}, ::uhd::usrp::multi_usrp::ALL_LOS, 13);
+      this->${id}->set_lo_export_enabled(${lo_export13}, ::uhd::usrp::multi_usrp::ALL_LOS, 13);
+      % endif
+      % endif
+      % if context.get('nchan')() > 14:
+      this->${id}->set_center_freq(${center_freq14}, 14);
+      % if context.get('gain_type' + '14')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain14}, 14);
+      % elif context.get('gain_type' + '14')() == 'power':
+      this->${id}->set_power_reference(${gain14}, 14);
+      % else:
+      this->${id}->set_gain(${gain14}, 14);
+      % endif
+      % if context.get('ant14')():
+      this->${id}->set_antenna(${ant14}, 14);
+      % endif
+      % if context.get('bw14')():
+      this->${id}->set_bandwidth(${bw14}, 14);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source14}, ::uhd::usrp::multi_usrp::ALL_LOS, 14);
+      this->${id}->set_lo_export_enabled(${lo_export14}, ::uhd::usrp::multi_usrp::ALL_LOS, 14);
+      % endif
+      % endif
+      % if context.get('nchan')() > 15:
+      this->${id}->set_center_freq(${center_freq15}, 15);
+      % if context.get('gain_type' + '15')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain15}, 15);
+      % elif context.get('gain_type' + '15')() == 'power':
+      this->${id}->set_power_reference(${gain15}, 15);
+      % else:
+      this->${id}->set_gain(${gain15}, 15);
+      % endif
+      % if context.get('ant15')():
+      this->${id}->set_antenna(${ant15}, 15);
+      % endif
+      % if context.get('bw15')():
+      this->${id}->set_bandwidth(${bw15}, 15);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source15}, ::uhd::usrp::multi_usrp::ALL_LOS, 15);
+      this->${id}->set_lo_export_enabled(${lo_export15}, ::uhd::usrp::multi_usrp::ALL_LOS, 15);
+      % endif
+      % endif
+      % if context.get('nchan')() > 16:
+      this->${id}->set_center_freq(${center_freq16}, 16);
+      % if context.get('gain_type' + '16')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain16}, 16);
+      % elif context.get('gain_type' + '16')() == 'power':
+      this->${id}->set_power_reference(${gain16}, 16);
+      % else:
+      this->${id}->set_gain(${gain16}, 16);
+      % endif
+      % if context.get('ant16')():
+      this->${id}->set_antenna(${ant16}, 16);
+      % endif
+      % if context.get('bw16')():
+      this->${id}->set_bandwidth(${bw16}, 16);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source16}, ::uhd::usrp::multi_usrp::ALL_LOS, 16);
+      this->${id}->set_lo_export_enabled(${lo_export16}, ::uhd::usrp::multi_usrp::ALL_LOS, 16);
+      % endif
+      % endif
+      % if context.get('nchan')() > 17:
+      this->${id}->set_center_freq(${center_freq17}, 17);
+      % if context.get('gain_type' + '17')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain17}, 17);
+      % elif context.get('gain_type' + '17')() == 'power':
+      this->${id}->set_power_reference(${gain17}, 17);
+      % else:
+      this->${id}->set_gain(${gain17}, 17);
+      % endif
+      % if context.get('ant17')():
+      this->${id}->set_antenna(${ant17}, 17);
+      % endif
+      % if context.get('bw17')():
+      this->${id}->set_bandwidth(${bw17}, 17);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source17}, ::uhd::usrp::multi_usrp::ALL_LOS, 17);
+      this->${id}->set_lo_export_enabled(${lo_export17}, ::uhd::usrp::multi_usrp::ALL_LOS, 17);
+      % endif
+      % endif
+      % if context.get('nchan')() > 18:
+      this->${id}->set_center_freq(${center_freq18}, 18);
+      % if context.get('gain_type' + '18')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain18}, 18);
+      % elif context.get('gain_type' + '18')() == 'power':
+      this->${id}->set_power_reference(${gain18}, 18);
+      % else:
+      this->${id}->set_gain(${gain18}, 18);
+      % endif
+      % if context.get('ant18')():
+      this->${id}->set_antenna(${ant18}, 18);
+      % endif
+      % if context.get('bw18')():
+      this->${id}->set_bandwidth(${bw18}, 18);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source18}, ::uhd::usrp::multi_usrp::ALL_LOS, 18);
+      this->${id}->set_lo_export_enabled(${lo_export18}, ::uhd::usrp::multi_usrp::ALL_LOS, 18);
+      % endif
+      % endif
+      % if context.get('nchan')() > 19:
+      this->${id}->set_center_freq(${center_freq19}, 19);
+      % if context.get('gain_type' + '19')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain19}, 19);
+      % elif context.get('gain_type' + '19')() == 'power':
+      this->${id}->set_power_reference(${gain19}, 19);
+      % else:
+      this->${id}->set_gain(${gain19}, 19);
+      % endif
+      % if context.get('ant19')():
+      this->${id}->set_antenna(${ant19}, 19);
+      % endif
+      % if context.get('bw19')():
+      this->${id}->set_bandwidth(${bw19}, 19);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source19}, ::uhd::usrp::multi_usrp::ALL_LOS, 19);
+      this->${id}->set_lo_export_enabled(${lo_export19}, ::uhd::usrp::multi_usrp::ALL_LOS, 19);
+      % endif
+      % endif
+      % if context.get('nchan')() > 20:
+      this->${id}->set_center_freq(${center_freq20}, 20);
+      % if context.get('gain_type' + '20')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain20}, 20);
+      % elif context.get('gain_type' + '20')() == 'power':
+      this->${id}->set_power_reference(${gain20}, 20);
+      % else:
+      this->${id}->set_gain(${gain20}, 20);
+      % endif
+      % if context.get('ant20')():
+      this->${id}->set_antenna(${ant20}, 20);
+      % endif
+      % if context.get('bw20')():
+      this->${id}->set_bandwidth(${bw20}, 20);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source20}, ::uhd::usrp::multi_usrp::ALL_LOS, 20);
+      this->${id}->set_lo_export_enabled(${lo_export20}, ::uhd::usrp::multi_usrp::ALL_LOS, 20);
+      % endif
+      % endif
+      % if context.get('nchan')() > 21:
+      this->${id}->set_center_freq(${center_freq21}, 21);
+      % if context.get('gain_type' + '21')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain21}, 21);
+      % elif context.get('gain_type' + '21')() == 'power':
+      this->${id}->set_power_reference(${gain21}, 21);
+      % else:
+      this->${id}->set_gain(${gain21}, 21);
+      % endif
+      % if context.get('ant21')():
+      this->${id}->set_antenna(${ant21}, 21);
+      % endif
+      % if context.get('bw21')():
+      this->${id}->set_bandwidth(${bw21}, 21);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source21}, ::uhd::usrp::multi_usrp::ALL_LOS, 21);
+      this->${id}->set_lo_export_enabled(${lo_export21}, ::uhd::usrp::multi_usrp::ALL_LOS, 21);
+      % endif
+      % endif
+      % if context.get('nchan')() > 22:
+      this->${id}->set_center_freq(${center_freq22}, 22);
+      % if context.get('gain_type' + '22')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain22}, 22);
+      % elif context.get('gain_type' + '22')() == 'power':
+      this->${id}->set_power_reference(${gain22}, 22);
+      % else:
+      this->${id}->set_gain(${gain22}, 22);
+      % endif
+      % if context.get('ant22')():
+      this->${id}->set_antenna(${ant22}, 22);
+      % endif
+      % if context.get('bw22')():
+      this->${id}->set_bandwidth(${bw22}, 22);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source22}, ::uhd::usrp::multi_usrp::ALL_LOS, 22);
+      this->${id}->set_lo_export_enabled(${lo_export22}, ::uhd::usrp::multi_usrp::ALL_LOS, 22);
+      % endif
+      % endif
+      % if context.get('nchan')() > 23:
+      this->${id}->set_center_freq(${center_freq23}, 23);
+      % if context.get('gain_type' + '23')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain23}, 23);
+      % elif context.get('gain_type' + '23')() == 'power':
+      this->${id}->set_power_reference(${gain23}, 23);
+      % else:
+      this->${id}->set_gain(${gain23}, 23);
+      % endif
+      % if context.get('ant23')():
+      this->${id}->set_antenna(${ant23}, 23);
+      % endif
+      % if context.get('bw23')():
+      this->${id}->set_bandwidth(${bw23}, 23);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source23}, ::uhd::usrp::multi_usrp::ALL_LOS, 23);
+      this->${id}->set_lo_export_enabled(${lo_export23}, ::uhd::usrp::multi_usrp::ALL_LOS, 23);
+      % endif
+      % endif
+      % if context.get('nchan')() > 24:
+      this->${id}->set_center_freq(${center_freq24}, 24);
+      % if context.get('gain_type' + '24')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain24}, 24);
+      % elif context.get('gain_type' + '24')() == 'power':
+      this->${id}->set_power_reference(${gain24}, 24);
+      % else:
+      this->${id}->set_gain(${gain24}, 24);
+      % endif
+      % if context.get('ant24')():
+      this->${id}->set_antenna(${ant24}, 24);
+      % endif
+      % if context.get('bw24')():
+      this->${id}->set_bandwidth(${bw24}, 24);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source24}, ::uhd::usrp::multi_usrp::ALL_LOS, 24);
+      this->${id}->set_lo_export_enabled(${lo_export24}, ::uhd::usrp::multi_usrp::ALL_LOS, 24);
+      % endif
+      % endif
+      % if context.get('nchan')() > 25:
+      this->${id}->set_center_freq(${center_freq25}, 25);
+      % if context.get('gain_type' + '25')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain25}, 25);
+      % elif context.get('gain_type' + '25')() == 'power':
+      this->${id}->set_power_reference(${gain25}, 25);
+      % else:
+      this->${id}->set_gain(${gain25}, 25);
+      % endif
+      % if context.get('ant25')():
+      this->${id}->set_antenna(${ant25}, 25);
+      % endif
+      % if context.get('bw25')():
+      this->${id}->set_bandwidth(${bw25}, 25);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source25}, ::uhd::usrp::multi_usrp::ALL_LOS, 25);
+      this->${id}->set_lo_export_enabled(${lo_export25}, ::uhd::usrp::multi_usrp::ALL_LOS, 25);
+      % endif
+      % endif
+      % if context.get('nchan')() > 26:
+      this->${id}->set_center_freq(${center_freq26}, 26);
+      % if context.get('gain_type' + '26')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain26}, 26);
+      % elif context.get('gain_type' + '26')() == 'power':
+      this->${id}->set_power_reference(${gain26}, 26);
+      % else:
+      this->${id}->set_gain(${gain26}, 26);
+      % endif
+      % if context.get('ant26')():
+      this->${id}->set_antenna(${ant26}, 26);
+      % endif
+      % if context.get('bw26')():
+      this->${id}->set_bandwidth(${bw26}, 26);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source26}, ::uhd::usrp::multi_usrp::ALL_LOS, 26);
+      this->${id}->set_lo_export_enabled(${lo_export26}, ::uhd::usrp::multi_usrp::ALL_LOS, 26);
+      % endif
+      % endif
+      % if context.get('nchan')() > 27:
+      this->${id}->set_center_freq(${center_freq27}, 27);
+      % if context.get('gain_type' + '27')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain27}, 27);
+      % elif context.get('gain_type' + '27')() == 'power':
+      this->${id}->set_power_reference(${gain27}, 27);
+      % else:
+      this->${id}->set_gain(${gain27}, 27);
+      % endif
+      % if context.get('ant27')():
+      this->${id}->set_antenna(${ant27}, 27);
+      % endif
+      % if context.get('bw27')():
+      this->${id}->set_bandwidth(${bw27}, 27);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source27}, ::uhd::usrp::multi_usrp::ALL_LOS, 27);
+      this->${id}->set_lo_export_enabled(${lo_export27}, ::uhd::usrp::multi_usrp::ALL_LOS, 27);
+      % endif
+      % endif
+      % if context.get('nchan')() > 28:
+      this->${id}->set_center_freq(${center_freq28}, 28);
+      % if context.get('gain_type' + '28')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain28}, 28);
+      % elif context.get('gain_type' + '28')() == 'power':
+      this->${id}->set_power_reference(${gain28}, 28);
+      % else:
+      this->${id}->set_gain(${gain28}, 28);
+      % endif
+      % if context.get('ant28')():
+      this->${id}->set_antenna(${ant28}, 28);
+      % endif
+      % if context.get('bw28')():
+      this->${id}->set_bandwidth(${bw28}, 28);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source28}, ::uhd::usrp::multi_usrp::ALL_LOS, 28);
+      this->${id}->set_lo_export_enabled(${lo_export28}, ::uhd::usrp::multi_usrp::ALL_LOS, 28);
+      % endif
+      % endif
+      % if context.get('nchan')() > 29:
+      this->${id}->set_center_freq(${center_freq29}, 29);
+      % if context.get('gain_type' + '29')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain29}, 29);
+      % elif context.get('gain_type' + '29')() == 'power':
+      this->${id}->set_power_reference(${gain29}, 29);
+      % else:
+      this->${id}->set_gain(${gain29}, 29);
+      % endif
+      % if context.get('ant29')():
+      this->${id}->set_antenna(${ant29}, 29);
+      % endif
+      % if context.get('bw29')():
+      this->${id}->set_bandwidth(${bw29}, 29);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source29}, ::uhd::usrp::multi_usrp::ALL_LOS, 29);
+      this->${id}->set_lo_export_enabled(${lo_export29}, ::uhd::usrp::multi_usrp::ALL_LOS, 29);
+      % endif
+      % endif
+      % if context.get('nchan')() > 30:
+      this->${id}->set_center_freq(${center_freq30}, 30);
+      % if context.get('gain_type' + '30')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain30}, 30);
+      % elif context.get('gain_type' + '30')() == 'power':
+      this->${id}->set_power_reference(${gain30}, 30);
+      % else:
+      this->${id}->set_gain(${gain30}, 30);
+      % endif
+      % if context.get('ant30')():
+      this->${id}->set_antenna(${ant30}, 30);
+      % endif
+      % if context.get('bw30')():
+      this->${id}->set_bandwidth(${bw30}, 30);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source30}, ::uhd::usrp::multi_usrp::ALL_LOS, 30);
+      this->${id}->set_lo_export_enabled(${lo_export30}, ::uhd::usrp::multi_usrp::ALL_LOS, 30);
+      % endif
+      % endif
+      % if context.get('nchan')() > 31:
+      this->${id}->set_center_freq(${center_freq31}, 31);
+      % if context.get('gain_type' + '31')() == 'normalized':
+      this->${id}->set_normalized_gain(${gain31}, 31);
+      % elif context.get('gain_type' + '31')() == 'power':
+      this->${id}->set_power_reference(${gain31}, 31);
+      % else:
+      this->${id}->set_gain(${gain31}, 31);
+      % endif
+      % if context.get('ant31')():
+      this->${id}->set_antenna(${ant31}, 31);
+      % endif
+      % if context.get('bw31')():
+      this->${id}->set_bandwidth(${bw31}, 31);
+      % endif
+      % if context.get('show_lo_controls')():
+      this->${id}->set_lo_source(${lo_source31}, ::uhd::usrp::multi_usrp::ALL_LOS, 31);
+      this->${id}->set_lo_export_enabled(${lo_export31}, ::uhd::usrp::multi_usrp::ALL_LOS, 31);
+      % endif
+      % endif
+      % if clock_rate():
+      this->${id}->set_clock_rate(${clock_rate}, ::uhd::usrp::multi_usrp::ALL_MBOARDS);
+      % endif
+      % if start_time() >= 0.0:
+      this->${id}->set_start_time(::uhd::time_spec_t(${float(start_time)}));
+      % endif
+    link: ['gnuradio-uhd uhd']
+    callbacks:
+    - set_samp_rate(${samp_rate})
+    -   set_center_freq(${center_freq0}, 0)
+    -   |
+        % if context.get('gain_type' + '0')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain0}, 0);
+        % elif context.get('gain_type' + '0')() == 'power':
+        this->${id}->set_power_reference(${gain0}, 0);
+        % else:
+        this->${id}->set_gain(${gain0}, 0);
+        % endif
+    -   ${'set_lo_source(' + lo_source0 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 0)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export0 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 0)' if show_lo_controls else ''}
+    -   set_antenna(${ant0}, 0)
+    -   set_bandwidth(${bw0}, 0)
+    -   set_center_freq(${center_freq1}, 1)
+    -   |
+        % if context.get('gain_type' + '1')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain1}, 1);
+        % elif context.get('gain_type' + '1')() == 'power':
+        this->${id}->set_power_reference(${gain1}, 1);
+        % else:
+        this->${id}->set_gain(${gain1}, 1);
+        % endif
+    -   ${'set_lo_source(' + lo_source1 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 1)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export1 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 1)' if show_lo_controls else ''}
+    -   set_antenna(${ant1}, 1)
+    -   set_bandwidth(${bw1}, 1)
+    -   set_center_freq(${center_freq2}, 2)
+    -   |
+        % if context.get('gain_type' + '2')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain2}, 2);
+        % elif context.get('gain_type' + '2')() == 'power':
+        this->${id}->set_power_reference(${gain2}, 2);
+        % else:
+        this->${id}->set_gain(${gain2}, 2);
+        % endif
+    -   ${'set_lo_source(' + lo_source2 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 2)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export2 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 2)' if show_lo_controls else ''}
+    -   set_antenna(${ant2}, 2)
+    -   set_bandwidth(${bw2}, 2)
+    -   set_center_freq(${center_freq3}, 3)
+    -   |
+        % if context.get('gain_type' + '3')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain3}, 3);
+        % elif context.get('gain_type' + '3')() == 'power':
+        this->${id}->set_power_reference(${gain3}, 3);
+        % else:
+        this->${id}->set_gain(${gain3}, 3);
+        % endif
+    -   ${'set_lo_source(' + lo_source3 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 3)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export3 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 3)' if show_lo_controls else ''}
+    -   set_antenna(${ant3}, 3)
+    -   set_bandwidth(${bw3}, 3)
+    -   set_center_freq(${center_freq4}, 4)
+    -   |
+        % if context.get('gain_type' + '4')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain4}, 4);
+        % elif context.get('gain_type' + '4')() == 'power':
+        this->${id}->set_power_reference(${gain4}, 4);
+        % else:
+        this->${id}->set_gain(${gain4}, 4);
+        % endif
+    -   ${'set_lo_source(' + lo_source4 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 4)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export4 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 4)' if show_lo_controls else ''}
+    -   set_antenna(${ant4}, 4)
+    -   set_bandwidth(${bw4}, 4)
+    -   set_center_freq(${center_freq5}, 5)
+    -   |
+        % if context.get('gain_type' + '5')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain5}, 5);
+        % elif context.get('gain_type' + '5')() == 'power':
+        this->${id}->set_power_reference(${gain5}, 5);
+        % else:
+        this->${id}->set_gain(${gain5}, 5);
+        % endif
+    -   ${'set_lo_source(' + lo_source5 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 5)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export5 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 5)' if show_lo_controls else ''}
+    -   set_antenna(${ant5}, 5)
+    -   set_bandwidth(${bw5}, 5)
+    -   set_center_freq(${center_freq6}, 6)
+    -   |
+        % if context.get('gain_type' + '6')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain6}, 6);
+        % elif context.get('gain_type' + '6')() == 'power':
+        this->${id}->set_power_reference(${gain6}, 6);
+        % else:
+        this->${id}->set_gain(${gain6}, 6);
+        % endif
+    -   ${'set_lo_source(' + lo_source6 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 6)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export6 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 6)' if show_lo_controls else ''}
+    -   set_antenna(${ant6}, 6)
+    -   set_bandwidth(${bw6}, 6)
+    -   set_center_freq(${center_freq7}, 7)
+    -   |
+        % if context.get('gain_type' + '7')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain7}, 7);
+        % elif context.get('gain_type' + '7')() == 'power':
+        this->${id}->set_power_reference(${gain7}, 7);
+        % else:
+        this->${id}->set_gain(${gain7}, 7);
+        % endif
+    -   ${'set_lo_source(' + lo_source7 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 7)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export7 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 7)' if show_lo_controls else ''}
+    -   set_antenna(${ant7}, 7)
+    -   set_bandwidth(${bw7}, 7)
+    -   set_center_freq(${center_freq8}, 8)
+    -   |
+        % if context.get('gain_type' + '8')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain8}, 8);
+        % elif context.get('gain_type' + '8')() == 'power':
+        this->${id}->set_power_reference(${gain8}, 8);
+        % else:
+        this->${id}->set_gain(${gain8}, 8);
+        % endif
+    -   ${'set_lo_source(' + lo_source8 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 8)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export8 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 8)' if show_lo_controls else ''}
+    -   set_antenna(${ant8}, 8)
+    -   set_bandwidth(${bw8}, 8)
+    -   set_center_freq(${center_freq9}, 9)
+    -   |
+        % if context.get('gain_type' + '9')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain9}, 9);
+        % elif context.get('gain_type' + '9')() == 'power':
+        this->${id}->set_power_reference(${gain9}, 9);
+        % else:
+        this->${id}->set_gain(${gain9}, 9);
+        % endif
+    -   ${'set_lo_source(' + lo_source9 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 9)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export9 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 9)' if show_lo_controls else ''}
+    -   set_antenna(${ant9}, 9)
+    -   set_bandwidth(${bw9}, 9)
+    -   set_center_freq(${center_freq10}, 10)
+    -   |
+        % if context.get('gain_type' + '10')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain10}, 10);
+        % elif context.get('gain_type' + '10')() == 'power':
+        this->${id}->set_power_reference(${gain10}, 10);
+        % else:
+        this->${id}->set_gain(${gain10}, 10);
+        % endif
+    -   ${'set_lo_source(' + lo_source10 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 10)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export10 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 10)' if show_lo_controls else ''}
+    -   set_antenna(${ant10}, 10)
+    -   set_bandwidth(${bw10}, 10)
+    -   set_center_freq(${center_freq11}, 11)
+    -   |
+        % if context.get('gain_type' + '11')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain11}, 11);
+        % elif context.get('gain_type' + '11')() == 'power':
+        this->${id}->set_power_reference(${gain11}, 11);
+        % else:
+        this->${id}->set_gain(${gain11}, 11);
+        % endif
+    -   ${'set_lo_source(' + lo_source11 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 11)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export11 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 11)' if show_lo_controls else ''}
+    -   set_antenna(${ant11}, 11)
+    -   set_bandwidth(${bw11}, 11)
+    -   set_center_freq(${center_freq12}, 12)
+    -   |
+        % if context.get('gain_type' + '12')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain12}, 12);
+        % elif context.get('gain_type' + '12')() == 'power':
+        this->${id}->set_power_reference(${gain12}, 12);
+        % else:
+        this->${id}->set_gain(${gain12}, 12);
+        % endif
+    -   ${'set_lo_source(' + lo_source12 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 12)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export12 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 12)' if show_lo_controls else ''}
+    -   set_antenna(${ant12}, 12)
+    -   set_bandwidth(${bw12}, 12)
+    -   set_center_freq(${center_freq13}, 13)
+    -   |
+        % if context.get('gain_type' + '13')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain13}, 13);
+        % elif context.get('gain_type' + '13')() == 'power':
+        this->${id}->set_power_reference(${gain13}, 13);
+        % else:
+        this->${id}->set_gain(${gain13}, 13);
+        % endif
+    -   ${'set_lo_source(' + lo_source13 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 13)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export13 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 13)' if show_lo_controls else ''}
+    -   set_antenna(${ant13}, 13)
+    -   set_bandwidth(${bw13}, 13)
+    -   set_center_freq(${center_freq14}, 14)
+    -   |
+        % if context.get('gain_type' + '14')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain14}, 14);
+        % elif context.get('gain_type' + '14')() == 'power':
+        this->${id}->set_power_reference(${gain14}, 14);
+        % else:
+        this->${id}->set_gain(${gain14}, 14);
+        % endif
+    -   ${'set_lo_source(' + lo_source14 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 14)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export14 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 14)' if show_lo_controls else ''}
+    -   set_antenna(${ant14}, 14)
+    -   set_bandwidth(${bw14}, 14)
+    -   set_center_freq(${center_freq15}, 15)
+    -   |
+        % if context.get('gain_type' + '15')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain15}, 15);
+        % elif context.get('gain_type' + '15')() == 'power':
+        this->${id}->set_power_reference(${gain15}, 15);
+        % else:
+        this->${id}->set_gain(${gain15}, 15);
+        % endif
+    -   ${'set_lo_source(' + lo_source15 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 15)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export15 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 15)' if show_lo_controls else ''}
+    -   set_antenna(${ant15}, 15)
+    -   set_bandwidth(${bw15}, 15)
+    -   set_center_freq(${center_freq16}, 16)
+    -   |
+        % if context.get('gain_type' + '16')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain16}, 16);
+        % elif context.get('gain_type' + '16')() == 'power':
+        this->${id}->set_power_reference(${gain16}, 16);
+        % else:
+        this->${id}->set_gain(${gain16}, 16);
+        % endif
+    -   ${'set_lo_source(' + lo_source16 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 16)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export16 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 16)' if show_lo_controls else ''}
+    -   set_antenna(${ant16}, 16)
+    -   set_bandwidth(${bw16}, 16)
+    -   set_center_freq(${center_freq17}, 17)
+    -   |
+        % if context.get('gain_type' + '17')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain17}, 17);
+        % elif context.get('gain_type' + '17')() == 'power':
+        this->${id}->set_power_reference(${gain17}, 17);
+        % else:
+        this->${id}->set_gain(${gain17}, 17);
+        % endif
+    -   ${'set_lo_source(' + lo_source17 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 17)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export17 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 17)' if show_lo_controls else ''}
+    -   set_antenna(${ant17}, 17)
+    -   set_bandwidth(${bw17}, 17)
+    -   set_center_freq(${center_freq18}, 18)
+    -   |
+        % if context.get('gain_type' + '18')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain18}, 18);
+        % elif context.get('gain_type' + '18')() == 'power':
+        this->${id}->set_power_reference(${gain18}, 18);
+        % else:
+        this->${id}->set_gain(${gain18}, 18);
+        % endif
+    -   ${'set_lo_source(' + lo_source18 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 18)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export18 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 18)' if show_lo_controls else ''}
+    -   set_antenna(${ant18}, 18)
+    -   set_bandwidth(${bw18}, 18)
+    -   set_center_freq(${center_freq19}, 19)
+    -   |
+        % if context.get('gain_type' + '19')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain19}, 19);
+        % elif context.get('gain_type' + '19')() == 'power':
+        this->${id}->set_power_reference(${gain19}, 19);
+        % else:
+        this->${id}->set_gain(${gain19}, 19);
+        % endif
+    -   ${'set_lo_source(' + lo_source19 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 19)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export19 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 19)' if show_lo_controls else ''}
+    -   set_antenna(${ant19}, 19)
+    -   set_bandwidth(${bw19}, 19)
+    -   set_center_freq(${center_freq20}, 20)
+    -   |
+        % if context.get('gain_type' + '20')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain20}, 20);
+        % elif context.get('gain_type' + '20')() == 'power':
+        this->${id}->set_power_reference(${gain20}, 20);
+        % else:
+        this->${id}->set_gain(${gain20}, 20);
+        % endif
+    -   ${'set_lo_source(' + lo_source20 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 20)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export20 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 20)' if show_lo_controls else ''}
+    -   set_antenna(${ant20}, 20)
+    -   set_bandwidth(${bw20}, 20)
+    -   set_center_freq(${center_freq21}, 21)
+    -   |
+        % if context.get('gain_type' + '21')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain21}, 21);
+        % elif context.get('gain_type' + '21')() == 'power':
+        this->${id}->set_power_reference(${gain21}, 21);
+        % else:
+        this->${id}->set_gain(${gain21}, 21);
+        % endif
+    -   ${'set_lo_source(' + lo_source21 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 21)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export21 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 21)' if show_lo_controls else ''}
+    -   set_antenna(${ant21}, 21)
+    -   set_bandwidth(${bw21}, 21)
+    -   set_center_freq(${center_freq22}, 22)
+    -   |
+        % if context.get('gain_type' + '22')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain22}, 22);
+        % elif context.get('gain_type' + '22')() == 'power':
+        this->${id}->set_power_reference(${gain22}, 22);
+        % else:
+        this->${id}->set_gain(${gain22}, 22);
+        % endif
+    -   ${'set_lo_source(' + lo_source22 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 22)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export22 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 22)' if show_lo_controls else ''}
+    -   set_antenna(${ant22}, 22)
+    -   set_bandwidth(${bw22}, 22)
+    -   set_center_freq(${center_freq23}, 23)
+    -   |
+        % if context.get('gain_type' + '23')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain23}, 23);
+        % elif context.get('gain_type' + '23')() == 'power':
+        this->${id}->set_power_reference(${gain23}, 23);
+        % else:
+        this->${id}->set_gain(${gain23}, 23);
+        % endif
+    -   ${'set_lo_source(' + lo_source23 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 23)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export23 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 23)' if show_lo_controls else ''}
+    -   set_antenna(${ant23}, 23)
+    -   set_bandwidth(${bw23}, 23)
+    -   set_center_freq(${center_freq24}, 24)
+    -   |
+        % if context.get('gain_type' + '24')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain24}, 24);
+        % elif context.get('gain_type' + '24')() == 'power':
+        this->${id}->set_power_reference(${gain24}, 24);
+        % else:
+        this->${id}->set_gain(${gain24}, 24);
+        % endif
+    -   ${'set_lo_source(' + lo_source24 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 24)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export24 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 24)' if show_lo_controls else ''}
+    -   set_antenna(${ant24}, 24)
+    -   set_bandwidth(${bw24}, 24)
+    -   set_center_freq(${center_freq25}, 25)
+    -   |
+        % if context.get('gain_type' + '25')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain25}, 25);
+        % elif context.get('gain_type' + '25')() == 'power':
+        this->${id}->set_power_reference(${gain25}, 25);
+        % else:
+        this->${id}->set_gain(${gain25}, 25);
+        % endif
+    -   ${'set_lo_source(' + lo_source25 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 25)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export25 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 25)' if show_lo_controls else ''}
+    -   set_antenna(${ant25}, 25)
+    -   set_bandwidth(${bw25}, 25)
+    -   set_center_freq(${center_freq26}, 26)
+    -   |
+        % if context.get('gain_type' + '26')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain26}, 26);
+        % elif context.get('gain_type' + '26')() == 'power':
+        this->${id}->set_power_reference(${gain26}, 26);
+        % else:
+        this->${id}->set_gain(${gain26}, 26);
+        % endif
+    -   ${'set_lo_source(' + lo_source26 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 26)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export26 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 26)' if show_lo_controls else ''}
+    -   set_antenna(${ant26}, 26)
+    -   set_bandwidth(${bw26}, 26)
+    -   set_center_freq(${center_freq27}, 27)
+    -   |
+        % if context.get('gain_type' + '27')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain27}, 27);
+        % elif context.get('gain_type' + '27')() == 'power':
+        this->${id}->set_power_reference(${gain27}, 27);
+        % else:
+        this->${id}->set_gain(${gain27}, 27);
+        % endif
+    -   ${'set_lo_source(' + lo_source27 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 27)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export27 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 27)' if show_lo_controls else ''}
+    -   set_antenna(${ant27}, 27)
+    -   set_bandwidth(${bw27}, 27)
+    -   set_center_freq(${center_freq28}, 28)
+    -   |
+        % if context.get('gain_type' + '28')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain28}, 28);
+        % elif context.get('gain_type' + '28')() == 'power':
+        this->${id}->set_power_reference(${gain28}, 28);
+        % else:
+        this->${id}->set_gain(${gain28}, 28);
+        % endif
+    -   ${'set_lo_source(' + lo_source28 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 28)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export28 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 28)' if show_lo_controls else ''}
+    -   set_antenna(${ant28}, 28)
+    -   set_bandwidth(${bw28}, 28)
+    -   set_center_freq(${center_freq29}, 29)
+    -   |
+        % if context.get('gain_type' + '29')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain29}, 29);
+        % elif context.get('gain_type' + '29')() == 'power':
+        this->${id}->set_power_reference(${gain29}, 29);
+        % else:
+        this->${id}->set_gain(${gain29}, 29);
+        % endif
+    -   ${'set_lo_source(' + lo_source29 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 29)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export29 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 29)' if show_lo_controls else ''}
+    -   set_antenna(${ant29}, 29)
+    -   set_bandwidth(${bw29}, 29)
+    -   set_center_freq(${center_freq30}, 30)
+    -   |
+        % if context.get('gain_type' + '30')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain30}, 30);
+        % elif context.get('gain_type' + '30')() == 'power':
+        this->${id}->set_power_reference(${gain30}, 30);
+        % else:
+        this->${id}->set_gain(${gain30}, 30);
+        % endif
+    -   ${'set_lo_source(' + lo_source30 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 30)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export30 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 30)' if show_lo_controls else ''}
+    -   set_antenna(${ant30}, 30)
+    -   set_bandwidth(${bw30}, 30)
+    -   set_center_freq(${center_freq31}, 31)
+    -   |
+        % if context.get('gain_type' + '31')() == 'normalized':
+        this->${id}->set_normalized_gain(${gain31}, 31);
+        % elif context.get('gain_type' + '31')() == 'power':
+        this->${id}->set_power_reference(${gain31}, 31);
+        % else:
+        this->${id}->set_gain(${gain31}, 31);
+        % endif
+    -   ${'set_lo_source(' + lo_source31 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 31)' if show_lo_controls else ''}
+    -   ${'set_lo_export_enabled(' + lo_export31 + ', ::uhd::usrp::multi_usrp::ALL_LOS, 31)' if show_lo_controls else ''}
+    -   set_antenna(${ant31}, 31)
+    -   set_bandwidth(${bw31}, 31)
+
+documentation: |-
+    The UHD USRP Sink Block:
+
+    Device Address:
+    The device address is a delimited string used to locate UHD devices on your system.     If left blank, the first UHD device found will be used.     Use the device address to specify a specific device or list of devices.
+    USRP1 Example: serial=12345678
+    USRP2 Example: addr=192.168.10.2
+    USRP2 Example: addr0=192.168.10.2, addr1=192.168.10.3
+
+    In Type:
+    This parameter controls the data type of the stream in gnuradio.
+
+    Wire Format:
+    This parameter controls the form of the data over the bus/network.     Complex bytes may be used to trade off precision for bandwidth.     Not all formats are supported on all devices.
+
+    Stream Args:
+    Optional arguments to be passed in the UHD streamer object.     Streamer args is a list of key/value pairs; usage is determined by the implementation.
+    Ex: the scalar key affects the scaling between 16 and 8 bit integers in sc8 wire format.
+
+    Num Motherboards:
+    Selects the number of USRP motherboards in this device configuration.
+
+    Reference Source:
+    Where the motherboard should sync its time and clock references.
+    If source and sink blocks reference the same device,
+    it is only necessary to set the reference source on one of the blocks.
+
+    Subdevice specification:
+    Each motherboard should have its own subdevice specification     and all subdevice specifications should be the same length.     Select the subdevice or subdevices for each channel using a markup string.     The markup string consists of a list of dboard_slot:subdev_name pairs (one pair per channel).     If left blank, the UHD will try to select the first subdevice on your system.     See the application notes for further details.
+    Single channel example: :AB
+    Dual channel example: :A :B
+
+    Num Channels:
+    Selects the total number of channels in this multi-USRP configuration.
+    Ex: 4 motherboards with 2 channels per board = 8 channels total
+
+    Sample rate:
+    The sample rate is the number of samples per second input by this  block.     The UHD device driver will try its best to match the requested sample rate.     If the requested rate is not possible, the UHD block will print an error at runtime.
+
+    Center frequency:
+    The center frequency is the overall frequency of the RF chain.     For greater control of how the UHD tunes elements in the RF chain,     pass a tune_request object rather than a simple target frequency.
+    Tuning with an LO offset example: uhd.tune_request(freq, lo_off)
+    Tuning without DSP: uhd.tune_request(target_freq, dsp_freq=0,     dsp_freq_policy=uhd.tune_request.POLICY_MANUAL)
+
+    Antenna:
+    For subdevices with only one antenna, this may be left blank.     Otherwise, the user should specify one of the possible antenna choices.     See the daughterboard application notes for the possible antenna choices.
+
+    Bandwidth:
+    To use the default bandwidth filter setting, this should be zero.     Only certain subdevices have configurable bandwidth filters.     See the daughterboard application notes for possible configurations.
+
+    Length tag key (Sink only):
+    When a nonempty string is given, the USRP sink will look for length tags     to determine transmit burst lengths.
+
+    See the UHD manual for more detailed documentation:
+    http://uhd.ettus.com
+
+file_format: 1

@@ -1,0 +1,15 @@
+prefix=C:/PothosSDR
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: UHD
+Description: Ettus Research - USRP Hardware Driver
+URL: https://github.com/EttusResearch/uhd
+Version: 4.0.0.HEAD-0-g90ce6062
+Requires:
+Requires.private: 
+Conflicts:
+Cflags: -I${includedir} -IC:/local/boost_1_75_0
+Libs: -L${libdir} -luhd -lboost_system
+Libs.private: -LC:/local/boost_1_75_0/lib64-msvc-14.2

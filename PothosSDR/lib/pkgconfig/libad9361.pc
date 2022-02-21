@@ -1,0 +1,13 @@
+prefix=C:/PothosSDR
+exec_prefix=C:/PothosSDR
+libdir=C:/PothosSDR/lib
+sharedlibdir=C:/PothosSDR/lib
+includedir=C:/PothosSDR/include
+
+Name: libad9361
+Description: Device specific library for AD936X transceivers
+Version: 0.2
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lad9361
+Cflags: -I${includedir}

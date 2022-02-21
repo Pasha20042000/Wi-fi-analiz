@@ -1,0 +1,11 @@
+prefix=C:/PothosSDR
+exec_prefix=C:/PothosSDR
+libdir=${prefix}/lib
+includedir=${prefix}/include
+GSL_CBLAS_LIB=-lgslcblas
+
+Name: GSL
+Description: GNU Scientific Library
+Version: 2.5
+Libs: -L${libdir} -lgsl ${GSL_CBLAS_LIB} -lm -lm
+Cflags: -I${includedir}

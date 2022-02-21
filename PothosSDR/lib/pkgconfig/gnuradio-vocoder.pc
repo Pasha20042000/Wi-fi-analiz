@@ -1,0 +1,11 @@
+prefix=C:/PothosSDR
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: gnuradio-vocoder
+Description: GNU Radio blocks implementing voice codecs
+Requires: gnuradio-runtime
+Version: 3.9.2git
+Libs: -L${libdir} -lgnuradio-vocoder
+Cflags: -I${includedir}

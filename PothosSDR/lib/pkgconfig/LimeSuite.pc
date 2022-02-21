@@ -1,0 +1,15 @@
+prefix=C:/PothosSDR
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: LimeSuite
+Description: Driver and GUI for LMS7002M-based SDR platforms.
+URL: https://myriadrf.org/projects/lime-suite/
+Version: 20.10.0-PothosSDR-2021.07.25-vc16-x64
+Requires:
+Requires.private:
+Conflicts:
+Cflags: -I${includedir}
+Libs: -L${libdir} -lLimeSuite
+Libs.private:
