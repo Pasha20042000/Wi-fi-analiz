@@ -11,6 +11,9 @@ print(sn)
 samples = hackrf.read_samples()
 
 
+crypt
+
+
 
 #result = libhackrf.hackrf_set_sample_rate(dev, 20e6)
 #print "set sample rate = ", result
